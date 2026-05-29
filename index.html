@@ -84,7 +84,6 @@
                 <p class="text-xs text-slate-500 dark:text-slate-400">Silakan masuk menggunakan Email Anda</p>
             </div>
 
-            <!-- Login form works locally without directly calling fetch inside submit event -->
             <form id="loginForm" onsubmit="handleLogin(event)" class="space-y-4">
                 <div>
                     <label class="block text-sm font-medium mb-1 text-slate-700 dark:text-slate-300">Alamat Email *</label>
@@ -95,8 +94,8 @@
                 </div>
 
                 <div class="bg-slate-50 dark:bg-slate-900/50 p-3 rounded-xl border border-slate-100 dark:border-slate-800 text-[11px] text-slate-500">
-                    <i class="fa-solid fa-circle-info mr-1"></i> Demo Akun Offline: <br>
-                    • User: <strong class="text-blue-600">user@demo.com</strong><br>
+                    <i class="fa-solid fa-circle-info mr-1"></i> Akun Demo Sistem: <br>
+                    • User/Requester: <strong class="text-blue-600">user@demo.com</strong><br>
                     • Purchasing/Admin: <strong class="text-emerald-600">purchasing@demo.com</strong>
                 </div>
 
@@ -107,7 +106,8 @@
 
             <div class="flex flex-col items-center space-y-2 text-xs pt-2 border-t border-slate-100 dark:border-slate-700">
                 <button onclick="toggleAuthCard('register')" class="text-blue-600 hover:underline font-semibold">Daftar Akun Baru Mandiri</button>
-                <button onclick="openConfigFromLogin()" class="text-slate-400 hover:text-blue-600 transition-colors"><i class="fa-solid fa-gears mr-1"></i> Setup Koneksi Google Sheets</button>
+                <!-- Tombol ini hanya akan muncul jika URL database belum di-hardcode oleh admin -->
+                <button id="loginSetupBtn" onclick="openConfigFromLogin()" class="text-slate-400 hover:text-blue-600 transition-colors"><i class="fa-solid fa-gears mr-1"></i> Setup Koneksi Google Sheets</button>
             </div>
         </div>
 
@@ -135,14 +135,15 @@
                 <div class="grid grid-cols-2 gap-3">
                     <div>
                         <label class="block text-sm font-medium mb-1 text-slate-700 dark:text-slate-300">Divisi *</label>
-                        <select id="regDiv" required class="block w-full border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 bg-slate-50 dark:bg-slate-900 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
-                            <option value="Produksi">Produksi</option>
-                            <option value="Plant">Plant</option>
-                            <option value="Enginering">Enginering</option>
+                        <select id="regDiv" required class="block w-full border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 bg-slate-50 dark:bg-slate-900 text-sm focus:ring-2 focus:ring-blue-500 outline-none">  
+                            <option value="ENGINEERING">ENGINEERING</option>
+                            <option value="FINANCE">FINANCE</option>
                             <option value="HCGS">HCGS</option>
-                            <option value="Finance">Finance</option>
+                            <option value="LOGISTIK">LOGISTIK</option>
+                            <option value="OPERATION">OPERATION</option>
+                            <option value="PLANT">PLANT</option>
+                            <option value="PRODUKSI">PRODUKSI</option>
                             <option value="SHE">SHE</option>
-                            <option value="Logistik">Logistik</option>
                         </select>
                     </div>
                     <div>
@@ -214,7 +215,7 @@
                         <span>Dashboard</span>
                     </button>
                     
-                    <!-- Form Request: Always visible for User, hidden or secondary for Purchasing -->
+                    <!-- Form Request: Always visible for User, hidden from Purchasing -->
                     <button id="sideBtnNewRequest" onclick="navigateTo('new-request')" class="nav-item w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-slate-600 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-slate-700/50 transition-all duration-200 text-left">
                         <i class="fa-solid fa-plus-circle w-5"></i>
                         <span>Form Pengajuan PO</span>
@@ -226,7 +227,7 @@
                         <span>Daftar Pengajuan</span>
                     </button>
                     
-                    <!-- Settings: Hidden from User, visible to Purchasing/Admin -->
+                    <!-- Settings: Hidden from User, visible to Purchasing/Admin (If not locked) -->
                     <div id="sideSettingsDivider" class="pt-4 mt-4 border-t border-slate-100 dark:border-slate-700">
                         <button id="sideBtnSettings" onclick="navigateTo('integration-settings')" class="nav-item w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-slate-600 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-slate-700/50 transition-all duration-200 text-left">
                             <i class="fa-solid fa-gears w-5 text-indigo-500"></i>
@@ -484,19 +485,17 @@
                     <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm space-y-6">
                         <div class="border-b border-slate-100 dark:border-slate-700 pb-4">
                             <h1 class="text-2xl font-bold tracking-tight">Pengaturan Integrasi Google Sheets</h1>
-                            <p class="text-slate-500 dark:text-slate-400 text-sm mt-1">Hubungkan portal PO FAD-LMO langsung dengan database cloud Google Sheets.</p>
+                            <p class="text-slate-500 dark:text-slate-400 text-sm mt-1">Status dan alamat integrasi server Google Sheets.</p>
                         </div>
 
                         <div class="space-y-4">
                             <div>
                                 <label class="block text-sm font-medium">Google Apps Script Web App URL</label>
-                                <input type="text" id="gasUrl" placeholder="https://script.google.com/macros/s/AKfycb.../exec" class="mt-1 block w-full border border-slate-200 dark:border-slate-700 rounded-lg p-2.5 bg-white dark:bg-slate-900 text-sm">
-                                <p class="text-[11px] text-slate-400 mt-1">Gunakan URL Web App hasil deploy Google Apps Script Anda untuk sinkronisasi pendaftaran user dan database pengajuan PO.</p>
+                                <input type="text" id="gasUrl" readonly class="mt-1 block w-full border border-slate-200 dark:border-slate-700 rounded-lg p-2.5 bg-slate-100 dark:bg-slate-900 text-sm cursor-not-allowed text-slate-500" value="Terkunci & Terkonfigurasi Global">
+                                <p class="text-[11px] text-amber-500 mt-2 font-semibold">
+                                    <i class="fa-solid fa-lock mr-1"></i> Aplikasi telah dikunci secara global oleh Admin di dalam source code utama.
+                                </p>
                             </div>
-                        </div>
-
-                        <div class="flex justify-end gap-3 border-t border-slate-100 dark:border-slate-700 pt-4">
-                            <button onclick="saveIntegrationSettings()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-6 py-2.5 rounded-lg text-sm shadow transition-all">Hubungkan & Sinkronisasi</button>
                         </div>
                     </div>
                 </section>
@@ -507,28 +506,61 @@
 
     <!-- ================= JAVASCRIPT SYSTEM ENGINE ================= -->
     <script>
+        // =========================================================================
+        // 🔒 KONFIGURASI PUSAT (HARDCODED URL SINKRONISASI UNTUK SEMUA DEVICE)
+        // =========================================================================
+        // TEMPELKAN URL Web App Google Apps Script Anda (akhiran /exec) di dalam tanda kutip di bawah:
+        const CENTRAL_APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz09BSU1Ny3HI5Tpm3MTGnCAdFuUiJiqC_lAcrIAXSMegrs7EL4fp2teTUkHyGpVqlbcQ/exec"; 
+        // =========================================================================
+
         // App State Management
         let appState = {
             requests: [],
-            registeredUsers: [], // Chached users synced on load
+            registeredUsers: [], // Sync users for login
             currentUser: null,
             datatablesInstance: null,
             gasUrl: ""
         };
 
         window.onload = function() {
-            const savedUrl = localStorage.getItem('po_gas_url');
-            if (savedUrl) {
-                appState.gasUrl = savedUrl;
-                document.getElementById('gasUrl').value = savedUrl;
-                updateConnectionIndicator(true);
-                // Pre-fetch registered users for instant, clean login
-                preloadRegisteredUsers();
-            }
+            // Evaluasi koneksi pusat
+            initializeSystemConnection();
 
             checkUserSession();
             initDataTables();
         };
+
+        function initializeSystemConnection() {
+            const loginSetupBtn = document.getElementById('loginSetupBtn');
+            const sideSettings = document.getElementById('sideBtnSettings');
+            const sideDivider = document.getElementById('sideSettingsDivider');
+
+            if (CENTRAL_APPS_SCRIPT_URL && CENTRAL_APPS_SCRIPT_URL !== "TEMPELKAN_URL_WEB_APP_APPS_SCRIPT_DI_SINI") {
+                // Gunakan URL global pusat
+                appState.gasUrl = CENTRAL_APPS_SCRIPT_URL;
+                updateConnectionIndicator(true);
+                
+                // Kunci & Sembunyikan semua menu setup agar aman
+                if (loginSetupBtn) loginSetupBtn.style.display = 'none';
+                if (sideSettings) sideSettings.classList.add('hidden');
+                if (sideDivider) sideDivider.classList.add('hidden');
+                
+                // Ambil data users di background
+                preloadRegisteredUsers();
+            } else {
+                // Fallback ke penyimpanan lokal jika admin belum mengisi hardcode URL
+                const savedUrl = localStorage.getItem('po_gas_url');
+                if (savedUrl) {
+                    appState.gasUrl = savedUrl;
+                    document.getElementById('gasUrl').value = savedUrl;
+                    updateConnectionIndicator(true);
+                    preloadRegisteredUsers();
+                } else {
+                    updateConnectionIndicator(false);
+                    if (loginSetupBtn) loginSetupBtn.style.display = 'block';
+                }
+            }
+        }
 
         function updateConnectionIndicator(isConnected) {
             const dot = document.getElementById('statusIndicatorDot');
@@ -546,7 +578,6 @@
             }
         }
 
-        // Cache Users List in memory for quick logins
         function preloadRegisteredUsers() {
             if (!appState.gasUrl) return;
             fetch(`${appState.gasUrl}?action=getUsers`)
@@ -556,7 +587,7 @@
                     appState.registeredUsers = res.data;
                 }
             })
-            .catch(err => console.log("Gagal melakukan pra-sinkronisasi daftar pengguna."));
+            .catch(err => console.log("Gagal memuat list registrasi user di background."));
         }
 
         function toggleAuthCard(mode) {
@@ -572,7 +603,7 @@
             }
         }
 
-        // Registrasi Baru
+        // Pendaftaran Akun Baru Mandiri
         function handleRegister(event) {
             event.preventDefault();
 
@@ -583,14 +614,14 @@
 
             Swal.fire({
                 title: 'Mendaftarkan Akun...',
-                text: 'Memproses data pendaftaran',
+                text: 'Menyimpan profil di cloud database',
                 allowOutsideClick: false,
                 didOpen: () => { Swal.showLoading(); }
             });
 
             if (!appState.gasUrl) {
                 Swal.close();
-                // Simpan lokal sebagai fallback instan
+                // Demo fallback
                 const demoUser = { name: fullName, email: email, role: role, division: division };
                 setLoginSession(demoUser);
                 return;
@@ -615,7 +646,7 @@
                 if (res.success) {
                     Swal.fire({
                         title: "Pendaftaran Sukses!",
-                        text: "Akun baru Anda berhasil didaftarkan.",
+                        text: "Akun baru Anda berhasil didaftarkan di Google Sheet.",
                         icon: "success",
                         confirmButtonColor: "#10b981"
                     }).then(() => {
@@ -636,7 +667,7 @@
             });
         }
 
-        // Handle Login (Sangat cepat tanpa koneksi langsung pada tombol submit)
+        // Verifikasi Login (Sangat cepat & aman)
         function handleLogin(event) {
             event.preventDefault();
             const emailInput = document.getElementById('loginEmail').value.trim().toLowerCase();
@@ -650,7 +681,7 @@
                 return;
             }
 
-            // Memeriksa dari cache terdaftar yang telah disinkronkan saat sistem dimuat
+            // Gunakan list user yang telah di-preload di background
             if (appState.registeredUsers && appState.registeredUsers.length > 0) {
                 const userMatch = appState.registeredUsers.find(u => u.email.toLowerCase() === emailInput);
                 if (userMatch) {
@@ -664,18 +695,17 @@
                 }
             }
 
-            // Jika belum terhubung atau tidak terdaftar di cache, lakukan fallback interaktif
             if (!appState.gasUrl) {
                 Swal.fire({
                     title: "Koneksi Google Sheets Belum Ada",
-                    text: "Silakan tautkan URL Web App Google Sheets Anda terlebih dahulu untuk login kustom, atau gunakan email demo.",
+                    text: "Silakan masukkan URL Web App Google Sheets di source code Anda terlebih dahulu.",
                     icon: "info",
                     confirmButtonColor: "#3b82f6"
                 });
                 return;
             }
 
-            // Kueri instan cadangan jika cache kosong
+            // Jika cache belum terisi, lakukan pengecekan langsung ke server
             Swal.fire({
                 title: 'Mengecek Akun...',
                 allowOutsideClick: false,
@@ -703,7 +733,7 @@
             })
             .catch(() => {
                 Swal.close();
-                Swal.fire("Kesalahan", "Gagal memproses autentikasi. Gunakan demo akun untuk menguji sistem.", "warning");
+                Swal.fire("Kesalahan", "Gagal memproses autentikasi.", "warning");
             });
         }
 
@@ -724,7 +754,7 @@
             }
         }
 
-        // PEMISAHAN HAK AKSES DAN MENU SECARA PENUH
+        // TAMPILKAN MENU BERDASARKAN HAK AKSES SEBENARNYA (Strict Separation)
         function showDashboardApp() {
             document.getElementById('authScreen').classList.add('hidden');
             document.getElementById('appContainer').classList.remove('hidden');
@@ -738,18 +768,25 @@
             const sideDivider = document.getElementById('sideSettingsDivider');
             const subtextList = document.getElementById('requestsListSubtext');
 
-            // Kontrol Tampilan Akses Menu
+            // Setelan Akses Menu Sempurna
             if (appState.currentUser.role === "Purchasing") {
-                // Purchasing (Admin): Mengakses semua termasuk Dashboard dan Settings
+                // Admin/Purchasing: Bisa melihat Dashboard dan seluruh list usulan
                 sideDashboard.classList.remove('hidden');
-                sideNewRequest.classList.add('hidden'); // Sembunyikan form pengajuan baru dari menu sidebar utama admin
-                sideSettings.classList.remove('hidden');
-                sideDivider.classList.remove('hidden');
-                subtextList.innerText = "Seluruh usulan dari semua divisi/departemen.";
+                sideNewRequest.classList.add('hidden'); // Sembunyikan form pengajuan dari menu utama sidebar admin
                 
+                // Tampilkan menu pengaturan hanya jika admin belum mengunci URL global
+                if (CENTRAL_APPS_SCRIPT_URL && CENTRAL_APPS_SCRIPT_URL !== "TEMPELKAN_URL_WEB_APP_APPS_SCRIPT_DI_SINI") {
+                    sideSettings.classList.add('hidden');
+                    sideDivider.classList.add('hidden');
+                } else {
+                    sideSettings.classList.remove('hidden');
+                    sideDivider.classList.remove('hidden');
+                }
+                
+                subtextList.innerText = "Seluruh usulan dari semua divisi/departemen.";
                 navigateTo('dashboard');
             } else {
-                // User / Requester: HANYA bisa isi form dan lihat daftarnya sendiri
+                // User/Requester: Hanya bisa membuka form pengajuan PO dan daftar miliknya sendiri
                 sideDashboard.classList.add('hidden');
                 sideNewRequest.classList.remove('hidden');
                 sideSettings.classList.add('hidden');
@@ -774,15 +811,13 @@
         function openConfigFromLogin() {
             document.getElementById('authScreen').classList.add('hidden');
             document.getElementById('appContainer').classList.remove('hidden');
-            // Paksa akses pengaturan untuk setup
             document.getElementById('sideBtnSettings').classList.remove('hidden');
             document.getElementById('sideSettingsDivider').classList.remove('hidden');
             navigateTo('integration-settings');
         }
 
-        // Navigasi Terproteksi
+        // Navigasi Terproteksi Rute
         function navigateTo(viewId) {
-            // Proteksi rute User dari menu Dashboard & Settings
             if (appState.currentUser && appState.currentUser.role === "User" && (viewId === "dashboard" || viewId === "integration-settings")) {
                 navigateTo('new-request');
                 return;
@@ -807,7 +842,7 @@
             }
         }
 
-        // Mengambil data dari Google Sheet
+        // Tarik Data
         function fetchRequestsFromSheets() {
             if (!appState.gasUrl) {
                 const localData = localStorage.getItem('po_local_requests');
@@ -837,7 +872,7 @@
                         };
                     });
                     
-                    // Filter Ketat: Jika user biasa, sembunyikan pengajuan orang lain
+                    // Filter: Jika dia adalah user biasa, batasi hanya melihat karyanya sendiri
                     if (appState.currentUser && appState.currentUser.role === "User") {
                         appState.requests = appState.requests.filter(r => r.requester === appState.currentUser.name);
                     }
@@ -876,7 +911,7 @@
             localStorage.setItem('po_gas_url', url);
             Swal.fire({
                 title: "Koneksi Disimpan",
-                text: "URL integrasi disimpan. Halaman akan menyinkronkan ulang data.",
+                text: "URL integrasi disimpan.",
                 icon: "success",
                 confirmButtonColor: "#3b82f6"
             }).then(() => {
@@ -885,7 +920,7 @@
         }
 
         function loadDashboardStats() {
-            if (appState.currentUser && appState.currentUser.role === "User") return; // Skip stats for standard users
+            if (appState.currentUser && appState.currentUser.role === "User") return;
 
             const total = appState.requests.length;
             const pending = appState.requests.filter(r => r.status === 'Menunggu Proses').length;
