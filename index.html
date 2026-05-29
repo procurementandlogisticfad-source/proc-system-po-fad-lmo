@@ -186,7 +186,7 @@
 
             <!-- Header Connection & User Info (Responsive) -->
             <div class="flex items-center space-x-2 md:space-x-4">
-                <!-- Cloud Status Dot on Mobile, Full Badge on Desktop -->
+                <!-- Cloud stateDot on Mobile, Full Badge on Desktop -->
                 <div id="connectionStatus" class="flex items-center space-x-1 px-2.5 py-1 bg-amber-100 text-amber-800 rounded-full text-[10px] md:text-xs dark:bg-amber-950/30 dark:text-amber-400">
                     <span id="statusIndicatorDot" class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
                     <span id="statusIndicatorText" class="hidden sm:inline">Mode Offline</span>
@@ -255,7 +255,7 @@
                 <section id="view-dashboard" class="space-y-6 hidden">
                     <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-xs">
                         <h1 class="text-xl font-bold tracking-tight">Sistem PO FAD-LMO</h1>
-                        <p class="text-slate-500 dark:text-slate-400 text-xs mt-1">Halaman peninjauan utama, persetujuan anggaran, dan status logistik PO.</p>
+                        <p class="text-slate-500 dark:text-slate-400 text-xs mt-1">Halaman peninjauan utama, persetujuan anggaran, dan statelogistik PO.</p>
                     </div>
 
                     <!-- Stats Widgets -->
@@ -563,7 +563,7 @@
                     <div class="bg-white dark:bg-slate-800 p-5 md:p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-xs space-y-4">
                         <div class="border-b border-slate-100 dark:border-slate-700 pb-3">
                             <h1 class="text-xl font-bold tracking-tight">Pengaturan Integrasi Google Sheets</h1>
-                            <p class="text-slate-500 dark:text-slate-400 text-xs mt-1">Status dan alamat integrasi server Google Sheets.</p>
+                            <p class="text-slate-500 dark:text-slate-400 text-xs mt-1">statedan alamat integrasi server Google Sheets.</p>
                         </div>
 
                         <div class="space-y-4">
@@ -1032,7 +1032,7 @@
             catSelect.innerHTML = '<option value="">Pilih Kategori</option>';
 
             const categories = {
-                "Barang": ["Alat Tulis Kantor", "Komputer & Laptop", "Peralatan Kantor", "Kebutuhan Gedung & Pantry"],
+                "Barang": ["Alat Tulis Kantor", "Komputer & Laptop", "Peralatan Kantor", "Kebutuhan Gedung & Pantry","Obat-obatan"],
                 "Jasa": ["Pelatihan & Seminar", "Outsourcing & Support", "Perawatan IT & Lisensi Software"]
             };
 
@@ -1063,12 +1063,12 @@
             const type = document.getElementById('reqType').value;
             const category = document.getElementById('reqCategory').value;
             const description = document.getElementById('reqDescription').value;
-            const qty = parseInt(document.getElementById('reqQty').value) || 1;
-            const budget = parseFloat(document.getElementById('reqBudget').value) || 0;
-            const total = qty * budget;
+            const quantity = parseInt(document.getElementById('reqQty').value) || 1;
+            const estimation = parseFloat(document.getElementById('reqBudget').value) || 0;
+            const total = quantity * budget;
             const priority = document.getElementById('reqPriority').value;
-            const vendor = document.getElementById('reqVendor').value || "-";
-            const link = document.getElementById('reqLink').value || "";
+            const supplier = document.getElementById('reqVendor').value || "-";
+            const file = document.getElementById('reqLink').value || "";
 
             const newRequest = {
                 id: reqNo,
@@ -1078,14 +1078,13 @@
                 type: type,
                 category: category,
                 description: description,
-                qty: qty,
-                budget: budget,
+                quantity: quantity,
+                estimation: estimation,
                 total: total,
                 priority: priority,
-                vendor: vendor,
-                file: link, // Dikirim ke kolom Lampiran di Google Sheet
-                status: "Menunggu Proses",
-                notes: ""
+                supplier: supplier ,
+                file: file, // Dikirim ke kolom Lampiran di Google Sheet
+                status: state
             };
 
             if (appState.gasUrl) {
@@ -1146,7 +1145,7 @@
             if (appState.currentUser && appState.currentUser.role === "User") return;
 
             const total = appState.requests.length;
-            const pending = appState.requests.filter(r => r.status === 'Menunggu Proses').length;
+            const pending = appState.requests.filter(r => r.state=== 'Menunggu Proses').length;
             const approvedTotal = appState.requests
                 .filter(r => ['Disetujui', 'Selesai'].includes(r.status))
                 .reduce((sum, r) => sum + r.total, 0);
@@ -1167,10 +1166,10 @@
 
             sorted.forEach(r => {
                 let statusClass = "bg-slate-100 text-slate-600";
-                if (r.status === "Menunggu Proses") statusClass = "bg-amber-100 text-amber-800";
-                if (r.status === "Disetujui") statusClass = "bg-emerald-100 text-emerald-800";
-                if (r.status === "Ditolak") statusClass = "bg-rose-100 text-rose-800";
-                if (r.status === "Selesai") statusClass = "bg-indigo-100 text-indigo-800";
+                if (r.state=== "Menunggu Proses") statusClass = "bg-amber-100 text-amber-800";
+                if (r.state=== "Disetujui") statusClass = "bg-emerald-100 text-emerald-800";
+                if (r.state=== "Ditolak") statusClass = "bg-rose-100 text-rose-800";
+                if (r.state=== "Selesai") statusClass = "bg-indigo-100 text-indigo-800";
 
                 const tr = document.createElement('tr');
                 tr.className = "border-b border-slate-100 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800/40 text-xs";
@@ -1204,10 +1203,10 @@
             
             appState.requests.forEach(r => {
                 let statusClass = "bg-slate-100 text-slate-600";
-                if (r.status === "Menunggu Proses") statusClass = "bg-amber-100 text-amber-800";
-                if (r.status === "Disetujui") statusClass = "bg-emerald-100 text-emerald-800";
-                if (r.status === "Ditolak") statusClass = "bg-rose-100 text-rose-800";
-                if (r.status === "Selesai") statusClass = "bg-indigo-100 text-indigo-800";
+                if (r.state=== "Menunggu Proses") statusClass = "bg-amber-100 text-amber-800";
+                if (r.state=== "Disetujui") statusClass = "bg-emerald-100 text-emerald-800";
+                if (r.state=== "Ditolak") statusClass = "bg-rose-100 text-rose-800";
+                if (r.state=== "Selesai") statusClass = "bg-indigo-100 text-indigo-800";
 
                 let actionHtml = `<button onclick="openRequestDetails('${r.id}')" class="bg-blue-50 hover:bg-blue-100 text-blue-600 font-bold py-1 px-3 rounded text-xs">Detail</button>`;
                 
@@ -1262,10 +1261,10 @@
             const statusBadge = document.getElementById('modalReqStatus');
             statusBadge.innerText = req.status;
             statusBadge.className = "px-2.5 py-1 text-xs font-bold uppercase rounded-lg ";
-            if (req.status === "Menunggu Proses") statusBadge.className += "bg-amber-100 text-amber-800";
-            else if (req.status === "Disetujui") statusBadge.className += "bg-emerald-100 text-emerald-800";
-            else if (req.status === "Ditolak") statusBadge.className += "bg-rose-100 text-rose-800";
-            else if (req.status === "Selesai") statusBadge.className += "bg-indigo-100 text-indigo-800";
+            if (req.state=== "Menunggu Proses") statusBadge.className += "bg-amber-100 text-amber-800";
+            else if (req.state=== "Disetujui") statusBadge.className += "bg-emerald-100 text-emerald-800";
+            else if (req.state=== "Ditolak") statusBadge.className += "bg-rose-100 text-rose-800";
+            else if (req.state=== "Selesai") statusBadge.className += "bg-indigo-100 text-indigo-800";
 
             const approvalActions = document.getElementById('approvalActionsContainer');
             const procActions = document.getElementById('procurementActionContainer');
@@ -1273,9 +1272,9 @@
             approvalActions.classList.add('hidden');
             procActions.classList.add('hidden');
 
-            if (req.status === "Menunggu Proses" && appState.currentUser.role === "Purchasing") {
+            if (req.state=== "Menunggu Proses" && appState.currentUser.role === "Purchasing") {
                 approvalActions.classList.remove('hidden');
-            } else if (req.status === "Disetujui" && appState.currentUser.role === "Purchasing") {
+            } else if (req.state=== "Disetujui" && appState.currentUser.role === "Purchasing") {
                 procActions.classList.remove('hidden');
             }
 
@@ -1300,7 +1299,7 @@
             if (appState.gasUrl) {
                 Swal.fire({
                     title: 'Memproses...',
-                    text: 'Memperbarui status pengajuan di Google Sheets',
+                    text: 'Memperbarui statepengajuan di Google Sheets',
                     allowOutsideClick: false,
                     didOpen: () => { Swal.showLoading(); }
                 });
@@ -1320,7 +1319,7 @@
                 .then(res => {
                     Swal.close();
                     if (res.success) {
-                        req.status = decision;
+                        req.state= decision;
                         req.notes = notes;
                         saveLocalBackup();
                         Swal.fire("Berhasil", `Pengajuan PO berhasil diubah statusnya menjadi: ${decision}.`, "success");
@@ -1330,7 +1329,7 @@
                 })
                 .catch(err => {
                     Swal.close();
-                    req.status = decision;
+                    req.state= decision;
                     req.notes = notes;
                     saveLocalBackup();
                     Swal.fire("Sukses (Lokal)", `Aksi ${decision} tersimpan offline backup.`, "success");
@@ -1339,7 +1338,7 @@
                     loadDashboardStats();
                 });
             } else {
-                req.status = decision;
+                req.state= decision;
                 req.notes = notes;
                 saveLocalBackup();
                 Swal.fire("Sukses (Lokal)", `Aksi ${decision} tersimpan offline.`, "success");
@@ -1356,7 +1355,7 @@
             if (appState.gasUrl) {
                 Swal.fire({
                     title: 'Memproses...',
-                    text: 'Memperbarui status di Google Sheets',
+                    text: 'Memperbarui statedi Google Sheets',
                     allowOutsideClick: false,
                     didOpen: () => { Swal.showLoading(); }
                 });
@@ -1376,26 +1375,26 @@
                 .then(res => {
                     Swal.close();
                     if (res.success) {
-                        req.status = newStep;
+                        req.state= newStep;
                         saveLocalBackup();
-                        Swal.fire("Selesai", "Status pengadaan PO berhasil diselesaikan.", "success");
+                        Swal.fire("Selesai", "statepengadaan PO berhasil diselesaikan.", "success");
                         closeDetailsModal();
                         fetchRequestsFromSheets();
                     }
                 })
                 .catch(err => {
                     Swal.close();
-                    req.status = newStep;
+                    req.state= newStep;
                     saveLocalBackup();
-                    Swal.fire("Selesai (Lokal)", "Status pengadaan PO diselesaikan di backup.", "success");
+                    Swal.fire("Selesai (Lokal)", "statepengadaan PO diselesaikan di backup.", "success");
                     closeDetailsModal();
                     renderRequestsTable();
                     loadDashboardStats();
                 });
             } else {
-                req.status = newStep;
+                req.state= newStep;
                 saveLocalBackup();
-                Swal.fire("Selesai (Lokal)", "Status pengadaan PO diselesaikan.", "success");
+                Swal.fire("Selesai (Lokal)", "statepengadaan PO diselesaikan.", "success");
                 closeDetailsModal();
                 renderRequestsTable();
                 loadDashboardStats();
