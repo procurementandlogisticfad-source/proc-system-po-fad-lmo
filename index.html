@@ -980,17 +980,16 @@
                             date: item.tanggal,
                             requester: item.pemohon,
                             division: item.divisi,
-                            type: item.jenis || "Barang",
-                            category: item.kategori || "Komputer",
+                            type: item.jenis,
+                            category: item.kategori,
                             description: item.deskripsi,
-                            qty: parseInt(item.qty) || 1,
-                            budget: parseFloat(item.estimasi_budget) || 0,
-                            total: parseFloat(item.total_anggaran) || 0,
+                            quantity: parseInt(item.quantity) || 1,
+                            estimation: parseFloat(item.estimation),
+                            total: parseFloat(item.total),
                             priority: item.prioritas || "Normal",
-                            vendor: item.vendor || "-",
-                            link: item.lampiran || "",
-                            status: item.status || "Menunggu Proses",
-                            notes: item.alasan_catatan || item.catatan || ""
+                            supplier: item.supplier,
+                            document: item.document,
+                            status: item.status,
                         };
                     });
                     
