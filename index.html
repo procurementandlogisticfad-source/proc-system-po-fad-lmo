@@ -1,0 +1,1800 @@
+<!DOCTYPE html>
+<html lang="id" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Procurement System - Solusi Pengadaan Digital</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        navy: {
+                            50: '#f0f4f8',
+                            100: '#dbe3f0',
+                            500: '#1e3a8a',
+                            800: '#1e293b',
+                            900: '#0f172a',
+                        },
+                        accent: {
+                            blue: '#3b82f6',
+                            green: '#10b981',
+                            amber: '#f59e0b',
+                            red: '#ef4444'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome Icons & Google Fonts -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- DataTables CSS & JS (with jQuery) -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.5/css/jquery.dataTables.min.css" />
+    <script src="https://cdn.datatables.net/1.13.5/js/jquery.dataTables.min.js"></script>
+    <!-- QRCode Generator -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        /* Custom styling to match modern Tailwind look for DataTables */
+        .dataTables_wrapper .dataTables_length select,
+        .dataTables_wrapper .dataTables_filter input {
+            border: 1px solid #e2e8f0;
+            border-radius: 0.375rem;
+            padding: 0.25rem 0.75rem;
+            outline: none;
+        }
+        .dark .dataTables_wrapper .dataTables_length select,
+        .dark .dataTables_wrapper .dataTables_filter input {
+            background-color: #1e293b;
+            color: #f8fafc;
+            border-color: #475569;
+        }
+        .dark .dataTables_wrapper .dataTables_info,
+        .dark .dataTables_wrapper .dataTables_paginate .paginate_button {
+            color: #cbd5e1 !important;
+        }
+        .dataTables_wrapper .dataTables_paginate .paginate_button.current {
+            background: #3b82f6 !important;
+            color: white !important;
+            border: none !important;
+            border-radius: 0.375rem;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 min-h-screen transition-colors duration-300">
+
+    <!-- Top Navigation Bar -->
+    <nav class="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 fixed w-full z-30 top-0 left-0 px-4 py-3 flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+            <div class="p-2 bg-blue-600 rounded-lg text-white">
+                <i class="fa-solid fa-file-invoice-dollar text-xl"></i>
+            </div>
+            <div>
+                <span class="text-lg font-bold tracking-tight text-slate-900 dark:text-white">Smart<span class="text-blue-600">Procure</span></span>
+                <span class="hidden md:inline-block ml-2 px-2 py-0.5 text-xs font-semibold bg-blue-100 text-blue-800 rounded dark:bg-blue-900/30 dark:text-blue-300">V1.0</span>
+            </div>
+        </div>
+
+        <div class="flex items-center space-x-4">
+            <!-- Mode Penyelamat/Sistem Integrasi Status -->
+            <div id="connectionStatus" class="hidden md:flex items-center space-x-1.5 px-3 py-1 bg-emerald-100 text-emerald-800 rounded-full text-xs dark:bg-emerald-950/30 dark:text-emerald-400">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span>Mode Simulasi (Lokal)</span>
+            </div>
+
+            <!-- Dark Mode Toggle -->
+            <button id="themeToggle" class="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors">
+                <i id="themeIcon" class="fa-solid fa-moon text-lg"></i>
+            </button>
+
+            <!-- User Profile & Sign Out -->
+            <div class="flex items-center space-x-3 border-l border-slate-200 dark:border-slate-700 pl-4">
+                <div class="text-right">
+                    <p id="navUserName" class="text-sm font-semibold">User Requester</p>
+                    <p id="navUserRole" class="text-xs text-slate-500 dark:text-slate-400">Requester</p>
+                </div>
+                <div class="relative group">
+                    <button id="userMenuBtn" class="w-9 h-9 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold">
+                        U
+                    </button>
+                    <!-- Simple Dropdown -->
+                    <div id="userDropdown" class="hidden absolute right-0 mt-2 w-48 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-lg py-1 text-sm text-slate-700 dark:text-slate-200">
+                        <div class="px-4 py-2 border-b border-slate-100 dark:border-slate-700">
+                            <span class="block font-medium">Ubah Hak Akses (Demo)</span>
+                        </div>
+                        <button onclick="switchRole('Requester')" class="w-full text-left px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-700 flex items-center justify-between">
+                            Requester <i id="roleCheckRequester" class="fa-solid fa-check text-blue-500"></i>
+                        </button>
+                        <button onclick="switchRole('Approver')" class="w-full text-left px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-700 flex items-center justify-between">
+                            Staff / Approver <i id="roleCheckApprover" class="fa-solid fa-check text-blue-500 hidden"></i>
+                        </button>
+                        <button onclick="switchRole('Admin')" class="w-full text-left px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-700 flex items-center justify-between">
+                            Admin Procurement <i id="roleCheckAdmin" class="fa-solid fa-check text-blue-500 hidden"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Sidebar & Main Layout Wrapper -->
+    <div class="flex pt-16 min-h-screen">
+        <!-- Sidebar Navigation -->
+        <aside class="w-64 bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700 fixed h-full z-20 left-0 overflow-y-auto hidden md:block transition-all duration-300">
+            <div class="p-4 space-y-1">
+                <button onclick="navigateTo('dashboard')" class="nav-item w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 bg-blue-50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-400 font-medium text-left">
+                    <i class="fa-solid fa-chart-line w-5"></i>
+                    <span>Dashboard</span>
+                </button>
+                <button onclick="navigateTo('new-request')" class="nav-item w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-slate-600 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-slate-700/50 transition-all duration-200 text-left">
+                    <i class="fa-solid fa-plus-circle w-5"></i>
+                    <span>Form Pengajuan</span>
+                </button>
+                <button onclick="navigateTo('requests-list')" class="nav-item w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-slate-600 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-slate-700/50 transition-all duration-200 text-left">
+                    <i class="fa-solid fa-list-check w-5"></i>
+                    <span>Daftar Pengadaan</span>
+                </button>
+                <button onclick="navigateTo('vendors')" class="nav-item w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-slate-600 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-slate-700/50 transition-all duration-200 text-left">
+                    <i class="fa-solid fa-handshake w-5"></i>
+                    <span>Manajemen Vendor</span>
+                </button>
+                <button onclick="navigateTo('reports')" class="nav-item w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-slate-600 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-slate-700/50 transition-all duration-200 text-left">
+                    <i class="fa-solid fa-file-export w-5"></i>
+                    <span>Laporan & Ekspor</span>
+                </button>
+                <div class="pt-4 mt-4 border-t border-slate-100 dark:border-slate-700">
+                    <button onclick="navigateTo('integration-settings')" class="nav-item w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-slate-600 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-slate-700/50 transition-all duration-200 text-left">
+                        <i class="fa-solid fa-gears w-5 text-indigo-500"></i>
+                        <span>Integrasi Sheets</span>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="absolute bottom-16 left-0 right-0 p-4">
+                <div class="bg-slate-100 dark:bg-slate-900/60 p-4 rounded-xl">
+                    <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">SLA & KPI Monitor</h4>
+                    <div class="flex items-center justify-between text-xs mb-1">
+                        <span>SLA Terjaga</span>
+                        <span class="font-bold text-emerald-500">92%</span>
+                    </div>
+                    <div class="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-1.5">
+                        <div class="bg-emerald-500 h-1.5 rounded-full" style="width: 92%"></div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="flex-1 md:ml-64 p-4 md:p-8 overflow-y-auto">
+
+            <!-- ================= DASHBOARD VIEW ================= -->
+            <section id="view-dashboard" class="space-y-6">
+                <!-- Welcome Banner -->
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
+                    <div>
+                        <h1 class="text-2xl font-bold tracking-tight">Selamat Datang di Portal Pengadaan</h1>
+                        <p class="text-slate-500 dark:text-slate-400 mt-1">Pantau dan kelola seluruh usulan barang dan jasa organisasi Anda dalam satu dashboard terintegrasi.</p>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="navigateTo('new-request')" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2.5 rounded-xl flex items-center space-x-2 shadow-sm transition-all text-sm">
+                            <i class="fa-solid fa-plus"></i>
+                            <span>Buat Usulan Baru</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Statistics Widgets -->
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
+                        <div class="flex justify-between items-start">
+                            <p class="text-sm font-semibold text-slate-400">Total Pengajuan</p>
+                            <span class="p-2 bg-blue-50 dark:bg-blue-900/30 rounded-lg text-blue-600"><i class="fa-solid fa-file-signature"></i></span>
+                        </div>
+                        <p id="stat-total" class="text-2xl font-bold mt-2">0</p>
+                        <p class="text-xs text-slate-400 mt-1">Semua status usulan</p>
+                    </div>
+                    <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
+                        <div class="flex justify-between items-start">
+                            <p class="text-sm font-semibold text-slate-400">Persetujuan Pending</p>
+                            <span class="p-2 bg-amber-50 dark:bg-amber-900/30 rounded-lg text-amber-500"><i class="fa-solid fa-clock-rotate-left"></i></span>
+                        </div>
+                        <p id="stat-pending" class="text-2xl font-bold mt-2">0</p>
+                        <p class="text-xs text-amber-500 mt-1">Butuh tindakan segera</p>
+                    </div>
+                    <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
+                        <div class="flex justify-between items-start">
+                            <p class="text-sm font-semibold text-slate-400">Total Anggaran disetujui</p>
+                            <span class="p-2 bg-emerald-50 dark:bg-emerald-900/30 rounded-lg text-emerald-500"><i class="fa-solid fa-wallet"></i></span>
+                        </div>
+                        <p id="stat-budget" class="text-2xl font-bold mt-2">Rp 0</p>
+                        <p class="text-xs text-emerald-500 mt-1">Dari usulan disetujui</p>
+                    </div>
+                    <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
+                        <div class="flex justify-between items-start">
+                            <p class="text-sm font-semibold text-slate-400">Rata-rata Waktu SLA</p>
+                            <span class="p-2 bg-indigo-50 dark:bg-indigo-900/30 rounded-lg text-indigo-500"><i class="fa-solid fa-hourglass-half"></i></span>
+                        </div>
+                        <p id="stat-sla" class="text-2xl font-bold mt-2">1.8 Hari</p>
+                        <p class="text-xs text-indigo-500 mt-1">Mulai draft s/d selesai</p>
+                    </div>
+                </div>
+
+                <!-- Charts Section -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm lg:col-span-2">
+                        <h3 class="font-bold text-lg mb-4 flex items-center gap-2"><i class="fa-solid fa-chart-bar text-blue-500"></i> Tren Pengadaan Bulanan</h3>
+                        <div class="h-64">
+                            <canvas id="monthlyChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
+                        <h3 class="font-bold text-lg mb-4 flex items-center gap-2"><i class="fa-solid fa-pie-chart text-emerald-500"></i> Distribusi Kategori</h3>
+                        <div class="h-64 flex justify-center items-center">
+                            <canvas id="categoryChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dashboard Filters & Recent Activity Table -->
+                <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
+                    <div class="p-5 border-b border-slate-100 dark:border-slate-700 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                        <div>
+                            <h3 class="font-bold text-lg">Aktivitas Terkini</h3>
+                            <p class="text-xs text-slate-400">Menampilkan 5 transaksi pengadaan terbaru</p>
+                        </div>
+                        <!-- Simple Filter Button -->
+                        <div class="flex gap-2">
+                            <select id="dash-filter-divisi" onchange="loadDashboardStats()" class="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-xs px-3 py-2">
+                                <option value="">Semua Divisi</option>
+                                <option value="IT">IT & Infrastruktur</option>
+                                <option value="HR">Human Resources</option>
+                                <option value="GA">General Affairs</option>
+                                <option value="Finance">Finance & Tax</option>
+                                <option value="Marketing">Marketing & Comm</option>
+                            </select>
+                            <button onclick="navigateTo('requests-list')" class="text-xs text-blue-600 hover:underline font-semibold flex items-center gap-1">
+                                Lihat Semua <i class="fa-solid fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-slate-50 dark:bg-slate-900/50 text-xs font-bold text-slate-400 uppercase border-b border-slate-100 dark:border-slate-700">
+                                    <th class="p-4">No Request</th>
+                                    <th class="p-4">Tanggal</th>
+                                    <th class="p-4">Pemohon</th>
+                                    <th class="p-4">Deskripsi Kebutuhan</th>
+                                    <th class="p-4 text-right">Estimasi Budget</th>
+                                    <th class="p-4">Status</th>
+                                    <th class="p-4">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="dash-recent-tbody">
+                                <!-- Dynamic dynamic rows here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ================= NEW REQUEST VIEW ================= -->
+            <section id="view-new-request" class="space-y-6 hidden">
+                <div class="flex items-center gap-2 mb-4">
+                    <button onclick="navigateTo('dashboard')" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-arrow-left text-lg"></i></button>
+                    <h1 class="text-2xl font-bold tracking-tight">Form Pengajuan Pengadaan</h1>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Request Form -->
+                    <form id="procurementForm" onsubmit="submitForm(event)" class="lg:col-span-2 bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm space-y-6">
+                        <!-- Header Form -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 border-b border-slate-100 dark:border-slate-700 pb-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-400 uppercase">Nomor Request</label>
+                                <input type="text" id="reqNo" readonly class="mt-1 block w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg p-2.5 font-mono text-sm font-bold text-blue-600" value="PRQ-YYYY-0001">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-400 uppercase">Tanggal Pengajuan</label>
+                                <input type="date" id="reqDate" required class="mt-1 block w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg p-2.5 text-sm">
+                            </div>
+                        </div>
+
+                        <!-- Applicant Info -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium">Nama Pemohon *</label>
+                                <input type="text" id="reqRequester" required class="mt-1 block w-full border border-slate-200 dark:border-slate-700 rounded-lg p-2.5 bg-white dark:bg-slate-900 text-sm">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium">Divisi/Departemen *</label>
+                                <select id="reqDivision" required class="mt-1 block w-full border border-slate-200 dark:border-slate-700 rounded-lg p-2.5 bg-white dark:bg-slate-900 text-sm">
+                                    <option value="">Pilih Divisi</option>
+                                    <option value="IT">IT & Infrastruktur</option>
+                                    <option value="HR">Human Resources</option>
+                                    <option value="GA">General Affairs</option>
+                                    <option value="Finance">Finance & Tax</option>
+                                    <option value="Marketing">Marketing & Comm</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Procurement Item Details -->
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium">Jenis Pengadaan *</label>
+                                <select id="reqType" required onchange="updateCategoriesDropdown()" class="mt-1 block w-full border border-slate-200 dark:border-slate-700 rounded-lg p-2.5 bg-white dark:bg-slate-900 text-sm">
+                                    <option value="">Pilih Jenis</option>
+                                    <option value="Barang">Barang (Aset/Inventaris)</option>
+                                    <option value="Jasa">Jasa & Outsourcing</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium">Kategori *</label>
+                                <select id="reqCategory" required class="mt-1 block w-full border border-slate-200 dark:border-slate-700 rounded-lg p-2.5 bg-white dark:bg-slate-900 text-sm">
+                                    <option value="">Pilih Kategori</option>
+                                    <!-- Populated dynamically via JS -->
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium">Prioritas *</label>
+                                <select id="reqPriority" required class="mt-1 block w-full border border-slate-200 dark:border-slate-700 rounded-lg p-2.5 bg-white dark:bg-slate-900 text-sm">
+                                    <option value="Normal">Normal</option>
+                                    <option value="Penting">Penting / Urgent</option>
+                                    <option value="Kritis">Kritis / Darurat</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Item Specifics -->
+                        <div>
+                            <label class="block text-sm font-medium">Deskripsi Kebutuhan Detail *</label>
+                            <textarea id="reqDescription" rows="3" required placeholder="Jelaskan secara terperinci spesifikasi teknis barang atau rincian jasa yang dibutuhkan..." class="mt-1 block w-full border border-slate-200 dark:border-slate-700 rounded-lg p-2.5 bg-white dark:bg-slate-900 text-sm"></textarea>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium">Kuantitas (Qty) *</label>
+                                <input type="number" id="reqQty" min="1" required class="mt-1 block w-full border border-slate-200 dark:border-slate-700 rounded-lg p-2.5 bg-white dark:bg-slate-900 text-sm" value="1">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium">Estimasi Budget Satuan *</label>
+                                <div class="relative mt-1">
+                                    <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400 text-sm">Rp</span>
+                                    <input type="number" id="reqBudget" min="1000" required class="block w-full pl-9 border border-slate-200 dark:border-slate-700 rounded-lg p-2.5 bg-white dark:bg-slate-900 text-sm" placeholder="Contoh: 1500000">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-400">Total Estimasi Budget</label>
+                                <div class="relative mt-1">
+                                    <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400 text-sm">Rp</span>
+                                    <input type="text" id="reqTotalBudget" readonly class="block w-full pl-9 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg p-2.5 text-sm font-bold text-slate-700 dark:text-slate-300" value="0">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Vendor & Lampiran -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium">Vendor Usulan (Opsional)</label>
+                                <select id="reqVendor" class="mt-1 block w-full border border-slate-200 dark:border-slate-700 rounded-lg p-2.5 bg-white dark:bg-slate-900 text-sm">
+                                    <!-- Populated dynamically via JS from vendors list -->
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium">Unggah File Lampiran / Proposal *</label>
+                                <input type="file" id="reqFile" class="mt-1 block w-full border border-slate-200 dark:border-slate-700 rounded-lg text-sm bg-white dark:bg-slate-900 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 dark:file:bg-blue-950 dark:file:text-blue-400">
+                                <p class="text-[10px] text-slate-400 mt-1">Lampirkan spesifikasi, penawaran harga, atau berkas pendukung (Max 5MB)</p>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium">Catatan Tambahan</label>
+                            <input type="text" id="reqNotes" placeholder="Catatan internal pengadaan..." class="mt-1 block w-full border border-slate-200 dark:border-slate-700 rounded-lg p-2.5 bg-white dark:bg-slate-900 text-sm">
+                        </div>
+
+                        <!-- Form Actions -->
+                        <div class="flex justify-between items-center pt-4 border-t border-slate-100 dark:border-slate-700">
+                            <button type="button" onclick="saveAsDraft()" class="bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 font-semibold text-slate-700 dark:text-white px-5 py-2.5 rounded-lg transition-all text-sm">
+                                Simpan Draft
+                            </button>
+                            <div class="flex gap-2">
+                                <button type="reset" class="bg-white hover:bg-slate-50 border border-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 dark:border-slate-700 px-5 py-2.5 rounded-lg transition-all text-sm">Reset</button>
+                                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2.5 rounded-lg transition-all text-sm shadow">Kirim Pengajuan</button>
+                            </div>
+                        </div>
+                    </form>
+
+                    <!-- Sidebar Guidelines & Gemini AI Quick Summary -->
+                    <div class="space-y-6">
+                        <!-- AI Helper Box -->
+                        <div class="bg-slate-900 text-white p-5 rounded-2xl shadow-lg border border-indigo-900/40 relative overflow-hidden">
+                            <div class="absolute -right-12 -top-12 w-24 h-24 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-full filter blur-xl opacity-30"></div>
+                            <div class="flex items-center gap-2 text-indigo-400 font-bold text-xs uppercase tracking-wider mb-2">
+                                <i class="fa-solid fa-wand-magic-sparkles animate-pulse"></i> Gemini AI Smart Assistant
+                            </div>
+                            <h4 class="font-bold text-base mb-2">Rangkuman Kebutuhan Cerdas</h4>
+                            <p class="text-xs text-slate-300 leading-relaxed mb-4">Butuh menyusun spesifikasi handal secara cepat? Klik tombol di bawah untuk meminta Gemini AI merangkum deskripsi pengadaan Anda & menganalisis risikonya secara instan.</p>
+                            <button type="button" onclick="askGeminiSummary()" class="w-full py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-xs font-bold rounded-lg transition-all shadow-md flex items-center justify-center gap-2">
+                                <span>Rangkum Pengajuan dengan AI</span>
+                            </button>
+                            <div id="aiResponseContainer" class="hidden mt-3 p-3 bg-slate-800 rounded-lg text-xs border border-slate-700">
+                                <span class="font-bold text-blue-400">Analisis AI:</span>
+                                <p id="aiResponseText" class="text-slate-300 leading-relaxed mt-1 whitespace-pre-line"></p>
+                            </div>
+                        </div>
+
+                        <!-- System Workflow Info -->
+                        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
+                            <h4 class="font-bold mb-3 text-sm">Alur Persetujuan Pengadaan</h4>
+                            <div class="relative pl-6 space-y-4 text-xs">
+                                <div class="before:content-[''] before:absolute before:left-2 before:top-2 before:bottom-0 before:w-0.5 before:bg-slate-200 dark:before:bg-slate-700"></div>
+                                <div class="relative">
+                                    <span class="absolute -left-6 top-0 w-4.5 h-4.5 rounded-full bg-blue-100 dark:bg-blue-900 text-blue-600 flex items-center justify-center text-[10px] font-bold">1</span>
+                                    <p class="font-semibold">Requester Menyerahkan Form</p>
+                                    <p class="text-slate-400">Nomor PRQ otomatis terbentuk dan sistem meluncurkan notifikasi email pertama.</p>
+                                </div>
+                                <div class="relative">
+                                    <span class="absolute -left-6 top-0 w-4.5 h-4.5 rounded-full bg-slate-100 dark:bg-slate-700 text-slate-400 flex items-center justify-center text-[10px] font-bold">2</span>
+                                    <p class="font-semibold text-slate-400">Persetujuan Tingkat 1 (Manager Divisi)</p>
+                                    <p class="text-slate-400">Approval limit s/d Rp 50 Juta langsung diproses oleh Manajer bersangkutan.</p>
+                                </div>
+                                <div class="relative">
+                                    <span class="absolute -left-6 top-0 w-4.5 h-4.5 rounded-full bg-slate-100 dark:bg-slate-700 text-slate-400 flex items-center justify-center text-[10px] font-bold">3</span>
+                                    <p class="font-semibold text-slate-400">Persetujuan Tingkat 2 (Direktur / CEO)</p>
+                                    <p class="text-slate-400">Khusus untuk usulan bernilai di atas Rp 50 Juta membutuhkan otorisasi tambahan.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ================= REQUEST LIST VIEW ================= -->
+            <section id="view-requests-list" class="space-y-6 hidden">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <div>
+                        <h1 class="text-2xl font-bold tracking-tight">Daftar Pengajuan Pengadaan</h1>
+                        <p class="text-slate-500 dark:text-slate-400 text-sm">Gunakan tabel di bawah ini untuk mencari, menyaring, dan mengelola usulan pengadaan.</p>
+                    </div>
+                    <button onclick="navigateTo('new-request')" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded-xl text-sm flex items-center gap-2 shadow">
+                        <i class="fa-solid fa-plus"></i> Usulan Baru
+                    </button>
+                </div>
+
+                <!-- Custom Filter Bar -->
+                <div class="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 flex flex-wrap gap-3 items-center">
+                    <span class="text-xs font-bold text-slate-400 uppercase tracking-wider mr-2"><i class="fa-solid fa-filter"></i> Saring:</span>
+                    <select id="filter-status" class="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-xs px-3 py-2">
+                        <option value="">Semua Status</option>
+                        <option value="Draft">Draft</option>
+                        <option value="Pending Approval">Pending Approval</option>
+                        <option value="Approved">Approved</option>
+                        <option value="Rejected">Rejected</option>
+                        <option value="In Progress">In Progress</option>
+                        <option value="Completed">Completed</option>
+                    </select>
+                    <select id="filter-priority" class="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-xs px-3 py-2">
+                        <option value="">Semua Prioritas</option>
+                        <option value="Normal">Normal</option>
+                        <option value="Penting">Penting</option>
+                        <option value="Kritis">Kritis</option>
+                    </select>
+                    <button onclick="applyFilters()" class="bg-slate-800 dark:bg-slate-700 hover:bg-slate-700 text-white text-xs font-bold px-4 py-2 rounded-lg transition-all">Saring Data</button>
+                    <button onclick="resetFilters()" class="text-xs text-slate-500 hover:underline">Reset</button>
+                </div>
+
+                <!-- Main Data Table Container -->
+                <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
+                    <div class="overflow-x-auto">
+                        <table id="requestsTable" class="w-full text-sm hover" style="width:100%">
+                            <thead>
+                                <tr class="text-left font-bold text-slate-400 bg-slate-50 dark:bg-slate-900">
+                                    <th>No Request</th>
+                                    <th>Tanggal</th>
+                                    <th>Pemohon / Divisi</th>
+                                    <th>Kategori</th>
+                                    <th>Estimasi Budget (Total)</th>
+                                    <th>Prioritas</th>
+                                    <th>Status</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="requests-tbody">
+                                <!-- Dynamic dynamic rows here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ================= APPROVAL & DETAILS MODAL ================= -->
+            <div id="detailsModal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+                <div class="bg-white dark:bg-slate-800 w-full max-w-4xl max-h-[90vh] rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 overflow-y-auto flex flex-col">
+                    <!-- Modal Header -->
+                    <div class="p-5 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center bg-slate-50 dark:bg-slate-900/50">
+                        <div>
+                            <span id="modalReqStatus" class="px-2.5 py-1 text-xs font-bold uppercase rounded-lg">Status</span>
+                            <h2 id="modalReqNo" class="text-xl font-bold mt-1 text-slate-900 dark:text-white">PRQ-XXXX-XXXX</h2>
+                        </div>
+                        <button onclick="closeDetailsModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 text-xl"><i class="fa-solid fa-xmark"></i></button>
+                    </div>
+
+                    <!-- Modal Body -->
+                    <div class="p-6 space-y-6 flex-1 overflow-y-auto">
+                        <!-- Request Quick Timeline Tracker -->
+                        <div class="bg-slate-100 dark:bg-slate-900/60 p-4 rounded-xl">
+                            <h3 class="text-xs font-bold uppercase text-slate-400 tracking-wider mb-3">Progress Realtime Tracker</h3>
+                            <div class="grid grid-cols-4 gap-2 text-center text-xs relative">
+                                <div id="tracker-draft" class="p-2 rounded-lg font-semibold bg-slate-200 text-slate-600 dark:bg-slate-700 dark:text-slate-400">1. Draft</div>
+                                <div id="tracker-pending" class="p-2 rounded-lg font-semibold bg-slate-200 text-slate-600 dark:bg-slate-700 dark:text-slate-400">2. Review</div>
+                                <div id="tracker-process" class="p-2 rounded-lg font-semibold bg-slate-200 text-slate-600 dark:bg-slate-700 dark:text-slate-400">3. Diproses</div>
+                                <div id="tracker-complete" class="p-2 rounded-lg font-semibold bg-slate-200 text-slate-600 dark:bg-slate-700 dark:text-slate-400">4. Selesai</div>
+                            </div>
+                        </div>
+
+                        <!-- Core Details Grid -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <h3 class="font-bold text-sm border-b border-slate-100 dark:border-slate-700 pb-2 mb-3">Informasi Pemohon</h3>
+                                <table class="w-full text-sm space-y-2">
+                                    <tr class="py-1"><td class="text-slate-400 w-1/3">Tanggal Pengajuan</td><td id="modalReqDate" class="font-semibold">: -</td></tr>
+                                    <tr class="py-1"><td class="text-slate-400">Nama Lengkap</td><td id="modalRequester" class="font-semibold">: -</td></tr>
+                                    <tr class="py-1"><td class="text-slate-400">Departemen</td><td id="modalDivision" class="font-semibold">: -</td></tr>
+                                    <tr class="py-1"><td class="text-slate-400">Prioritas Usulan</td><td id="modalPriority" class="font-semibold">: -</td></tr>
+                                </table>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-sm border-b border-slate-100 dark:border-slate-700 pb-2 mb-3">Detail Anggaran & Barang</h3>
+                                <table class="w-full text-sm space-y-2">
+                                    <tr class="py-1"><td class="text-slate-400 w-1/3">Jenis & Kategori</td><td id="modalCategory" class="font-semibold">: -</td></tr>
+                                    <tr class="py-1"><td class="text-slate-400">Kuantitas (Qty)</td><td id="modalQty" class="font-semibold">: -</td></tr>
+                                    <tr class="py-1"><td class="text-slate-400">Harga Satuan</td><td id="modalBudget" class="font-semibold">: -</td></tr>
+                                    <tr class="py-1"><td class="text-slate-400">Total Kebutuhan</td><td id="modalTotalBudget" class="font-semibold text-blue-600">: -</td></tr>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Description & Attachments -->
+                        <div class="space-y-3">
+                            <h3 class="font-bold text-sm border-b border-slate-100 dark:border-slate-700 pb-2">Deskripsi Teknis</h3>
+                            <p id="modalDescription" class="text-sm bg-slate-50 dark:bg-slate-900 p-4 rounded-xl whitespace-pre-wrap leading-relaxed">Spesifikasi barang...</p>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="p-3 bg-slate-100 dark:bg-slate-900/40 rounded-xl flex justify-between items-center">
+                                    <div class="flex items-center gap-2">
+                                        <i class="fa-solid fa-paperclip text-slate-400"></i>
+                                        <span id="modalFileName" class="text-xs truncate max-w-[200px]">proposal_pengadaan.pdf</span>
+                                    </div>
+                                    <a href="#" id="modalFileDownloadBtn" class="text-xs text-blue-600 hover:underline font-bold" target="_blank">Unduh <i class="fa-solid fa-download"></i></a>
+                                </div>
+                                <div class="p-3 bg-slate-100 dark:bg-slate-900/40 rounded-xl flex justify-between items-center">
+                                    <div class="flex items-center gap-2">
+                                        <i class="fa-solid fa-building text-slate-400"></i>
+                                        <span id="modalVendorName" class="text-xs truncate">Vendor Rekomendasi</span>
+                                    </div>
+                                    <span class="text-xs font-bold text-slate-500">Usulan</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Live Comments & Log History -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Approval History -->
+                            <div>
+                                <h3 class="font-bold text-sm border-b border-slate-100 dark:border-slate-700 pb-2 mb-3">Audit Logs / Jejak Approval</h3>
+                                <div id="modalLogsContainer" class="space-y-3 max-h-48 overflow-y-auto text-xs">
+                                    <!-- Dynamic logs will end here -->
+                                </div>
+                            </div>
+
+                            <!-- QR Code & Print Support -->
+                            <div class="flex flex-col items-center justify-center p-4 bg-slate-50 dark:bg-slate-900/40 rounded-xl border border-dashed border-slate-200 dark:border-slate-700">
+                                <div id="modalQrCode" class="p-2 bg-white rounded-lg mb-2"></div>
+                                <span class="text-[10px] text-slate-400 text-center uppercase tracking-wider">QR Code Pelacakan Digital</span>
+                                <button onclick="printRequestDetails()" class="mt-2 text-xs bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 px-3 py-1.5 rounded-lg font-bold flex items-center gap-1.5 transition-all">
+                                    <i class="fa-solid fa-print"></i> Cetak Dokumen
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Action Approval Bar (Hanya tampil untuk Approver/Admin jika status Pending) -->
+                        <div id="approvalActionsContainer" class="hidden border-t border-slate-200 dark:border-slate-700 pt-5 space-y-4">
+                            <h3 class="font-bold text-sm text-slate-900 dark:text-white">Tindakan Otorisasi Approver</h3>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Catatan Keputusan (Wajib diisi jika Reject)</label>
+                                <textarea id="approvalNotes" rows="2" placeholder="Tulis catatan persetujuan atau alasan penolakan..." class="w-full border border-slate-200 dark:border-slate-700 rounded-lg p-2 text-sm bg-slate-50 dark:bg-slate-900"></textarea>
+                            </div>
+                            <div class="flex justify-end gap-3">
+                                <button onclick="processApprovalDecision('Rejected')" class="bg-red-500 hover:bg-red-600 text-white text-xs font-bold px-4 py-2.5 rounded-lg transition-all flex items-center gap-1.5 shadow">
+                                    <i class="fa-solid fa-thumbs-down"></i> Tolak Usulan
+                                </button>
+                                <button onclick="processApprovalDecision('Approved')" class="bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold px-4 py-2.5 rounded-lg transition-all flex items-center gap-1.5 shadow">
+                                    <i class="fa-solid fa-thumbs-up"></i> Setujui Usulan
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Procurement Action Bar (Hanya tampil jika Status Approved untuk Procurement Staff) -->
+                        <div id="procurementActionContainer" class="hidden border-t border-slate-200 dark:border-slate-700 pt-5 space-y-4">
+                            <h3 class="font-bold text-sm text-blue-600">Langkah Pengadaan (Staff Procurement)</h3>
+                            <div class="flex flex-wrap gap-2">
+                                <button onclick="updateProcurementStep('In Progress')" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-4 py-2.5 rounded-lg transition-all">
+                                    Mulai Proses (In Progress)
+                                </button>
+                                <button onclick="updateProcurementStep('Completed')" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-2.5 rounded-lg transition-all">
+                                    Selesaikan Pengadaan (Completed)
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= VENDORS VIEW ================= -->
+            <section id="view-vendors" class="space-y-6 hidden">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h1 class="text-2xl font-bold tracking-tight">Manajemen Rekanan Vendor</h1>
+                        <p class="text-slate-500 dark:text-slate-400 text-sm">Kelola daftar vendor usulan, rating kinerja, dan kontak aktif rekanan perusahaan.</p>
+                    </div>
+                    <button onclick="openAddVendorModal()" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded-xl text-sm flex items-center gap-2 shadow">
+                        <i class="fa-solid fa-plus"></i> Tambah Vendor
+                    </button>
+                </div>
+
+                <!-- Vendor Grid Cards -->
+                <div id="vendorsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Cards populated via Javascript -->
+                </div>
+            </section>
+
+            <!-- ================= REPORTS & ANALYTICS VIEW ================= -->
+            <section id="view-reports" class="space-y-6 hidden">
+                <div>
+                    <h1 class="text-2xl font-bold tracking-tight">Pelaporan & Ekspor Data</h1>
+                    <p class="text-slate-500 dark:text-slate-400 text-sm">Unduh rekap data pengadaan bulanan atau cetak dokumen ringkasan untuk audit internal.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Export Box -->
+                    <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm space-y-4">
+                        <h3 class="font-bold text-lg flex items-center gap-2"><i class="fa-solid fa-file-excel text-emerald-500"></i> Ekspor CSV / Excel</h3>
+                        <p class="text-xs text-slate-500">Unduh seluruh rekaman database pengadaan barang dan jasa saat ini ke dalam berkas .csv yang kompatibel dengan Microsoft Excel atau Google Sheets.</p>
+                        <button onclick="exportToCSV()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-lg text-xs transition-all shadow flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-download"></i> Ekspor Berkas .CSV
+                        </button>
+                    </div>
+
+                    <!-- SLA Analisis & PDF Summary -->
+                    <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm space-y-4">
+                        <h3 class="font-bold text-lg flex items-center gap-2"><i class="fa-solid fa-file-pdf text-rose-500"></i> Cetak Ringkasan PDF</h3>
+                        <p class="text-xs text-slate-500">Cetak rekapitulasi data pengadaan aktif ke berkas laporan PDF terstruktur, siap diserahkan kepada jajaran eksekutif.</p>
+                        <button onclick="window.print()" class="w-full bg-rose-600 hover:bg-rose-700 text-white font-bold py-2.5 rounded-lg text-xs transition-all shadow flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-print"></i> Cetak Laporan Komprehensif
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Live Audit Log Activity -->
+                <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
+                    <h3 class="font-bold text-lg mb-4 flex items-center gap-2"><i class="fa-solid fa-clock-rotate-left text-blue-500"></i> Jejak Audit Sistem (Audit Logs)</h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-xs text-left">
+                            <thead>
+                                <tr class="bg-slate-50 dark:bg-slate-900 border-b border-slate-100 dark:border-slate-700 font-bold uppercase text-slate-400">
+                                    <th class="p-3">Waktu Log</th>
+                                    <th class="p-3">Pengguna</th>
+                                    <th class="p-3">Aksi / Event</th>
+                                    <th class="p-3">Deskripsi Perubahan</th>
+                                </tr>
+                            </thead>
+                            <tbody id="auditLogsTbody" class="divide-y divide-slate-100 dark:divide-slate-700">
+                                <!-- Dynamic audit logs from local storage -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ================= INTEGRATION SETTINGS VIEW ================= -->
+            <section id="view-integration-settings" class="space-y-6 hidden">
+                <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm space-y-6">
+                    <div class="border-b border-slate-100 dark:border-slate-700 pb-4">
+                        <h1 class="text-2xl font-bold tracking-tight">Pengaturan Integrasi Google Sheets</h1>
+                        <p class="text-slate-500 dark:text-slate-400 text-sm mt-1">Ubah mode aplikasi dari Simulasi Lokal ke Database Google Sheets secara langsung tanpa server.</p>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium">Google Apps Script Web App URL</label>
+                            <input type="text" id="gasUrl" placeholder="https://script.google.com/macros/s/AKfycb.../exec" class="mt-1 block w-full border border-slate-200 dark:border-slate-700 rounded-lg p-2.5 bg-white dark:bg-slate-900 text-sm">
+                            <p class="text-[11px] text-slate-400 mt-1">Hubungkan frontend ini dengan menempelkan URL Web App hasil deploy Google Apps Script Anda. Lihat panduan penyetelan di berkas pendukung.</p>
+                        </div>
+
+                        <div class="flex items-center space-x-2">
+                            <input type="checkbox" id="enableCloudStorage" class="w-4 h-4 text-blue-600 border-slate-300 rounded focus:ring-blue-500">
+                            <label for="enableCloudStorage" class="text-sm font-semibold">Aktifkan Sinkronisasi Google Sheets (Realtime)</label>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-end gap-3 border-t border-slate-100 dark:border-slate-700 pt-4">
+                        <button onclick="saveIntegrationSettings()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-6 py-2.5 rounded-lg text-sm shadow transition-all">Simpan Konfigurasi</button>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- Add Vendor Modal (Hidden) -->
+    <div id="addVendorModal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white dark:bg-slate-800 w-full max-w-md rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700">
+            <div class="p-5 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center">
+                <h2 class="text-lg font-bold">Registrasi Rekanan Vendor Baru</h2>
+                <button onclick="closeAddVendorModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form id="vendorForm" onsubmit="saveNewVendor(event)" class="p-5 space-y-4">
+                <div>
+                    <label class="block text-sm font-medium">Nama Perusahaan Vendor *</label>
+                    <input type="text" id="vName" required class="mt-1 block w-full border border-slate-200 dark:border-slate-700 rounded-lg p-2 bg-slate-50 dark:bg-slate-900 text-sm">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium">Kategori Spesialisasi *</label>
+                    <select id="vCategory" required class="mt-1 block w-full border border-slate-200 dark:border-slate-700 rounded-lg p-2 bg-slate-50 dark:bg-slate-900 text-sm">
+                        <option value="IT & Hardware">IT & Hardware</option>
+                        <option value="Software & Cloud">Software & Cloud</option>
+                        <option value="Alat Tulis Kantor (ATK)">Alat Tulis Kantor (ATK)</option>
+                        <option value="Sewa Gedung & Jasa">Sewa Gedung & Jasa</option>
+                        <option value="Peralatan Kantor">Peralatan Kantor</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium">Narahubung (PIC) *</label>
+                    <input type="text" id="vContact" required placeholder="Contoh: Budi Santoso (0812-xxxx)" class="mt-1 block w-full border border-slate-200 dark:border-slate-700 rounded-lg p-2 bg-slate-50 dark:bg-slate-900 text-sm">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium">Rating Kinerja Awal *</label>
+                    <select id="vRating" required class="mt-1 block w-full border border-slate-200 dark:border-slate-700 rounded-lg p-2 bg-slate-50 dark:bg-slate-900 text-sm">
+                        <option value="5">⭐⭐⭐⭐⭐ (Sangat Baik)</option>
+                        <option value="4" selected>⭐⭐⭐⭐ (Baik)</option>
+                        <option value="3">⭐⭐⭐ (Cukup)</option>
+                    </select>
+                </div>
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" onclick="closeAddVendorModal()" class="bg-slate-100 dark:bg-slate-700 px-4 py-2 rounded-lg text-xs">Batal</button>
+                    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-xs font-bold shadow">Simpan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ================= JAVASCRIPT SYSTEM ENGINE ================= -->
+    <script>
+        // Set API Key (Empty for runtime/canvas injection compatibility)
+        const apiKey = ""; 
+
+        // Initial Data Structure for Seed Mocking
+        const DEFAULT_REQUESTS = [
+            {
+                id: "PRQ-2026-0001",
+                date: "2026-05-15",
+                requester: "Agus Setyawan",
+                division: "IT",
+                type: "Barang",
+                category: "Komputer & Laptop",
+                description: "Kebutuhan laptop developer untuk tim Tech Engineering sebanyak 2 unit MacBook Pro M3 RAM 18GB.",
+                qty: 2,
+                budget: 35000000,
+                total: 70000000,
+                priority: "Penting",
+                vendor: "PT Komputer Nusantara",
+                file: "macbook_penawaran.pdf",
+                notes: "Urgensi untuk on-boarding karyawan baru per Juni.",
+                status: "Pending Approval",
+                logs: [{time: "15 Mei 2026 09:00", user: "Agus Setyawan", action: "Submit Request", detail: "Pengajuan dibuat secara digital"}]
+            },
+            {
+                id: "PRQ-2026-0002",
+                date: "2026-05-10",
+                requester: "Rina Wijaya",
+                division: "HR",
+                type: "Jasa",
+                category: "Pelatihan & Seminar",
+                description: "Pelatihan leadership & manajemen proyek agile untuk para manajer lini pertama.",
+                qty: 1,
+                budget: 15000000,
+                total: 15000000,
+                priority: "Normal",
+                vendor: "Lembaga Transformasi Leadership",
+                file: "silabus_leadership.pdf",
+                notes: "Anggaran masuk ke pos pengembangan karyawan.",
+                status: "Approved",
+                logs: [
+                    {time: "10 Mei 2026 10:15", user: "Rina Wijaya", action: "Submit Request", detail: "Pengajuan baru diunggah"},
+                    {time: "11 Mei 2026 14:00", user: "Manager HR", action: "Approved", detail: "Approved - Sesuai anggaran sisa tahunan"}
+                ]
+            },
+            {
+                id: "PRQ-2026-0003",
+                date: "2026-05-01",
+                requester: "Diana Sari",
+                division: "GA",
+                type: "Barang",
+                category: "Alat Tulis Kantor",
+                description: "Restock kertas A4 merk Sinar Dunia sebanyak 50 box untuk logistik pusat.",
+                qty: 50,
+                budget: 50000,
+                total: 2500000,
+                priority: "Normal",
+                vendor: "Toko ATK Berkah Jaya",
+                file: "invoice_atk.pdf",
+                notes: "Kertas stok menipis.",
+                status: "Completed",
+                logs: [
+                    {time: "01 Mei 2026 08:30", user: "Diana Sari", action: "Submit Request", detail: "Pengajuan stok berkala"},
+                    {time: "01 Mei 2026 11:30", user: "Manager GA", action: "Approved", detail: "Approved langsung"},
+                    {time: "02 Mei 2026 14:20", user: "Admin Procurement", action: "Completed", detail: "Barang telah diterima penuh oleh gudang logistik"}
+                ]
+            }
+        ];
+
+        const DEFAULT_VENDORS = [
+            { name: "PT Komputer Nusantara", category: "IT & Hardware", contact: "Budi (0812-3456-7890)", rating: 5, status: "Aktif" },
+            { name: "Lembaga Transformasi Leadership", category: "Sewa Gedung & Jasa", contact: "Laras (0811-987-654)", rating: 4, status: "Aktif" },
+            { name: "Toko ATK Berkah Jaya", category: "Alat Tulis Kantor (ATK)", contact: "Soni (0815-5555-222)", rating: 4, status: "Aktif" }
+        ];
+
+        // App State Management
+        let appState = {
+            requests: [],
+            vendors: [],
+            activeRole: "Requester", // Default demo role
+            activeView: "dashboard",
+            currentSelectedRequest: null,
+            datatablesInstance: null,
+            integration: {
+                enabled: false,
+                gasUrl: ""
+            }
+        };
+
+        // DOM Loaded Handler
+        window.onload = function() {
+            initLocalStorageData();
+            loadIntegrationSettingsFromStorage();
+            updateRoleUI();
+            
+            // Set initial dates
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('reqDate').value = today;
+
+            // Generate first automatic request code
+            generateNewRequestNumber();
+
+            // Populate Dropdowns & Views
+            updateCategoriesDropdown();
+            renderVendors();
+            loadDashboardStats();
+            initDataTables();
+
+            // Event Listener for total budget computation
+            document.getElementById('reqQty').addEventListener('input', calculateTotalBudget);
+            document.getElementById('reqBudget').addEventListener('input', calculateTotalBudget);
+
+            // User Profile Menu Dropdown Toggle
+            document.getElementById('userMenuBtn').addEventListener('click', function(e) {
+                e.stopPropagation();
+                const dropdown = document.getElementById('userDropdown');
+                dropdown.classList.toggle('hidden');
+            });
+            window.addEventListener('click', function() {
+                document.getElementById('userDropdown').classList.add('hidden');
+            });
+
+            // Initialize Charts
+            initCharts();
+        };
+
+        // Init LocalStorage Data if Empty
+        function initLocalStorageData() {
+            if (!localStorage.getItem('proc_requests')) {
+                localStorage.setItem('proc_requests', JSON.stringify(DEFAULT_REQUESTS));
+            }
+            if (!localStorage.getItem('proc_vendors')) {
+                localStorage.setItem('proc_vendors', JSON.stringify(DEFAULT_VENDORS));
+            }
+            if (!localStorage.getItem('proc_logs')) {
+                const initialLogs = [
+                    { time: new Date().toLocaleString('id-ID'), user: "System", action: "Initialization", detail: "Aplikasi web procurement berhasil diinisialisasi" }
+                ];
+                localStorage.setItem('proc_logs', JSON.stringify(initialLogs));
+            }
+
+            appState.requests = JSON.parse(localStorage.getItem('proc_requests'));
+            appState.vendors = JSON.parse(localStorage.getItem('proc_vendors'));
+        }
+
+        // Integration Settings System
+        function loadIntegrationSettingsFromStorage() {
+            const savedSettings = localStorage.getItem('proc_integration');
+            if (savedSettings) {
+                appState.integration = JSON.parse(savedSettings);
+                document.getElementById('gasUrl').value = appState.integration.gasUrl;
+                document.getElementById('enableCloudStorage').checked = appState.integration.enabled;
+                
+                if (appState.integration.enabled) {
+                    const statusBox = document.getElementById('connectionStatus');
+                    statusBox.innerHTML = `<span class="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span><span>Terhubung ke Sheets</span>`;
+                    statusBox.className = "flex items-center space-x-1.5 px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-xs dark:bg-blue-950/30 dark:text-blue-400";
+                    fetchDataFromSheets();
+                }
+            }
+        }
+
+        function saveIntegrationSettings() {
+            const url = document.getElementById('gasUrl').value;
+            const enabled = document.getElementById('enableCloudStorage').checked;
+
+            appState.integration.gasUrl = url;
+            appState.integration.enabled = enabled;
+
+            localStorage.setItem('proc_integration', JSON.stringify(appState.integration));
+            
+            Swal.fire({
+                title: "Konfigurasi Berhasil",
+                text: "Setelan integrasi Google Sheets telah disimpan.",
+                icon: "success",
+                confirmButtonColor: "#3b82f6"
+            }).then(() => {
+                location.reload();
+            });
+        }
+
+        // Simulate fetching data from Sheets
+        function fetchDataFromSheets() {
+            if (!appState.integration.gasUrl) return;
+            // Real fetch can be implemented here with JSONP or Fetch API CORS.
+            console.log("Mengambil data sinkronisasi dari Google Sheets:", appState.integration.gasUrl);
+        }
+
+        // Role Management System
+        function switchRole(role) {
+            appState.activeRole = role;
+            
+            // Hide all check icons in user dropdown
+            document.getElementById('roleCheckRequester').classList.add('hidden');
+            document.getElementById('roleCheckApprover').classList.add('hidden');
+            document.getElementById('roleCheckAdmin').classList.add('hidden');
+
+            // Show active check icon
+            document.getElementById('roleCheck' + role).classList.remove('hidden');
+
+            updateRoleUI();
+            
+            Swal.fire({
+                toast: true,
+                position: 'top-end',
+                icon: 'info',
+                title: `Berhasil mengubah hak akses ke: ${role}`,
+                showConfirmButton: false,
+                timer: 2000
+            });
+        }
+
+        function updateRoleUI() {
+            document.getElementById('navUserName').innerText = "Demo User (" + appState.activeRole + ")";
+            document.getElementById('navUserRole').innerText = appState.activeRole;
+            
+            // Re-render DataTables to adapt action buttons for specific roles
+            if (appState.datatablesInstance) {
+                renderRequestsTable();
+            }
+        }
+
+        // Navigation Controller
+        function navigateTo(viewId) {
+            // Hide all views
+            document.getElementById('view-dashboard').classList.add('hidden');
+            document.getElementById('view-new-request').classList.add('hidden');
+            document.getElementById('view-requests-list').classList.add('hidden');
+            document.getElementById('view-vendors').classList.add('hidden');
+            document.getElementById('view-reports').classList.add('hidden');
+            document.getElementById('view-integration-settings').classList.add('hidden');
+
+            // Show current view
+            document.getElementById('view-' + viewId).classList.remove('hidden');
+            appState.activeView = viewId;
+
+            // Manage sidebar item highlights
+            const navButtons = document.querySelectorAll('.nav-item');
+            navButtons.forEach(btn => {
+                btn.className = "nav-item w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-slate-600 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-slate-700/50 transition-all duration-200 text-left";
+            });
+
+            // Re-fetch current stats if entering dashboard
+            if (viewId === 'dashboard') {
+                loadDashboardStats();
+                updateChartsData();
+            } else if (viewId === 'requests-list') {
+                renderRequestsTable();
+            } else if (viewId === 'reports') {
+                renderAuditLogs();
+            }
+        }
+
+        // Theme Toggle System (Dark Mode)
+        const themeToggle = document.getElementById('themeToggle');
+        const themeIcon = document.getElementById('themeIcon');
+        
+        themeToggle.addEventListener('click', () => {
+            const html = document.documentElement;
+            if (html.classList.contains('dark')) {
+                html.classList.remove('dark');
+                localStorage.setItem('theme', 'light');
+                themeIcon.className = "fa-solid fa-moon text-lg";
+            } else {
+                html.classList.add('dark');
+                localStorage.setItem('theme', 'dark');
+                themeIcon.className = "fa-solid fa-sun text-lg text-amber-400";
+            }
+        });
+
+        // Auto Save Draft & Form Helpers
+        function generateNewRequestNumber() {
+            const count = appState.requests.length + 1;
+            const year = new Date().getFullYear();
+            const formatCount = String(count).padStart(4, '0');
+            document.getElementById('reqNo').value = `PRQ-${year}-${formatCount}`;
+        }
+
+        function calculateTotalBudget() {
+            const qty = parseFloat(document.getElementById('reqQty').value) || 0;
+            const budget = parseFloat(document.getElementById('reqBudget').value) || 0;
+            const total = qty * budget;
+            document.getElementById('reqTotalBudget').value = formatRupiah(total);
+        }
+
+        function updateCategoriesDropdown() {
+            const type = document.getElementById('reqType').value;
+            const catSelect = document.getElementById('reqCategory');
+            catSelect.innerHTML = '<option value="">Pilih Kategori</option>';
+
+            const categories = {
+                "Barang": ["Alat Tulis Kantor", "Komputer & Laptop", "Peralatan Kantor", "Kebutuhan Gedung & Pantry"],
+                "Jasa": ["Pelatihan & Seminar", "Penyewaan Event/Booth", "Outsourcing Kebersihan/Security", "Perawatan Software & IT Support"]
+            };
+
+            if (type && categories[type]) {
+                categories[type].forEach(cat => {
+                    const option = document.createElement('option');
+                    option.value = cat;
+                    option.text = cat;
+                    catSelect.appendChild(option);
+                });
+            }
+
+            // Populate Vendor Dropdown while we are at it
+            const reqVendor = document.getElementById('reqVendor');
+            reqVendor.innerHTML = '<option value="">Pilih Vendor Rekomendasi</option>';
+            appState.vendors.forEach(v => {
+                const option = document.createElement('option');
+                option.value = v.name;
+                option.text = `${v.name} (${v.category})`;
+                reqVendor.appendChild(option);
+            });
+        }
+
+        function saveAsDraft() {
+            const reqNo = document.getElementById('reqNo').value;
+            const requester = document.getElementById('reqRequester').value || "Draft Tanpa Nama";
+            const budgetRaw = parseFloat(document.getElementById('reqBudget').value) || 0;
+            const qty = parseInt(document.getElementById('reqQty').value) || 1;
+            const total = budgetRaw * qty;
+
+            const draft = {
+                id: reqNo,
+                date: document.getElementById('reqDate').value,
+                requester: requester,
+                division: document.getElementById('reqDivision').value || "N/A",
+                type: document.getElementById('reqType').value || "N/A",
+                category: document.getElementById('reqCategory').value || "N/A",
+                description: document.getElementById('reqDescription').value || "Draf Pengajuan",
+                qty: qty,
+                budget: budgetRaw,
+                total: total,
+                priority: document.getElementById('reqPriority').value,
+                vendor: document.getElementById('reqVendor').value || "N/A",
+                file: "N/A (Draft)",
+                notes: document.getElementById('reqNotes').value,
+                status: "Draft",
+                logs: [{time: new Date().toLocaleString('id-ID'), user: requester, action: "Simpan Draft", detail: "Mengamankan progress rancangan"}]
+            };
+
+            // Check if existing in array to update, otherwise push
+            const index = appState.requests.findIndex(r => r.id === reqNo);
+            if (index !== -1) {
+                appState.requests[index] = draft;
+            } else {
+                appState.requests.push(draft);
+            }
+
+            saveToLocalStorage();
+            writeAuditLog(requester, "Draft Saved", `Draft pengadaan ${reqNo} berhasil diamankan.`);
+            
+            Swal.fire({
+                title: "Draft Tersimpan",
+                text: "Anda dapat mematangkan data ini nanti di daftar pengadaan.",
+                icon: "success",
+                confirmButtonColor: "#3b82f6"
+            });
+        }
+
+        // Submit Form Processing
+        function submitForm(event) {
+            event.preventDefault();
+
+            const reqNo = document.getElementById('reqNo').value;
+            const requester = document.getElementById('reqRequester').value;
+            const division = document.getElementById('reqDivision').value;
+            const budgetRaw = parseFloat(document.getElementById('reqBudget').value);
+            const qty = parseInt(document.getElementById('reqQty').value);
+            const total = budgetRaw * qty;
+            const category = document.getElementById('reqCategory').value;
+            const description = document.getElementById('reqDescription').value;
+
+            const fileInput = document.getElementById('reqFile');
+            const fileName = fileInput.files.length > 0 ? fileInput.files[0].name : "rekomendasi_proposal.pdf";
+
+            const newRequest = {
+                id: reqNo,
+                date: document.getElementById('reqDate').value,
+                requester: requester,
+                division: division,
+                type: document.getElementById('reqType').value,
+                category: category,
+                description: description,
+                qty: qty,
+                budget: budgetRaw,
+                total: total,
+                priority: document.getElementById('reqPriority').value,
+                vendor: document.getElementById('reqVendor').value || "N/A",
+                file: fileName,
+                notes: document.getElementById('reqNotes').value,
+                status: "Pending Approval",
+                logs: [
+                    {time: new Date().toLocaleString('id-ID'), user: requester, action: "Submit Request", detail: "Pengajuan siap di-approve"}
+                ]
+            };
+
+            // Check if replacing draft
+            const index = appState.requests.findIndex(r => r.id === reqNo);
+            if (index !== -1) {
+                appState.requests[index] = newRequest;
+            } else {
+                appState.requests.push(newRequest);
+            }
+
+            saveToLocalStorage();
+            writeAuditLog(requester, "Submission", `Membuat pengajuan pengadaan resmi baru ${reqNo}`);
+            
+            // Send Mock Email Action Trigger
+            triggerEmailNotification(newRequest);
+
+            Swal.fire({
+                title: "Pengajuan Terkirim!",
+                text: `Sistem mendeteksi pengadaan Anda telah masuk antrean persetujuan dengan kode ${reqNo}`,
+                icon: "success",
+                confirmButtonColor: "#3b82f6"
+            }).then(() => {
+                document.getElementById('procurementForm').reset();
+                generateNewRequestNumber();
+                navigateTo('dashboard');
+            });
+        }
+
+        // Email Notification Engine Simulation
+        function triggerEmailNotification(req) {
+            console.log(`[Gmail API Sim] Mengirim email notifikasi persetujuan baru ke Manager ${req.division} terkait ${req.id}`);
+        }
+
+        // Helper: Format Rupiah
+        function formatRupiah(num) {
+            return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(num);
+        }
+
+        // Audit Logging Utilities
+        function writeAuditLog(user, action, detail) {
+            const logs = JSON.parse(localStorage.getItem('proc_logs')) || [];
+            logs.unshift({
+                time: new Date().toLocaleString('id-ID'),
+                user: user,
+                action: action,
+                detail: detail
+            });
+            localStorage.setItem('proc_logs', JSON.stringify(logs));
+        }
+
+        function renderAuditLogs() {
+            const logs = JSON.parse(localStorage.getItem('proc_logs')) || [];
+            const tbody = document.getElementById('auditLogsTbody');
+            tbody.innerHTML = '';
+
+            logs.forEach(l => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50 dark:hover:bg-slate-900";
+                tr.innerHTML = `
+                    <td class="p-3 text-slate-400 font-mono">${l.time}</td>
+                    <td class="p-3 font-semibold text-blue-600">${l.user}</td>
+                    <td class="p-3"><span class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-slate-100 dark:bg-slate-800">${l.action}</span></td>
+                    <td class="p-3 text-slate-500">${l.detail}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // Dashboard Stats Loader
+        function loadDashboardStats() {
+            const filterDivisi = document.getElementById('dash-filter-divisi').value;
+            let filteredRequests = appState.requests;
+
+            if (filterDivisi) {
+                filteredRequests = appState.requests.filter(r => r.division === filterDivisi);
+            }
+
+            const total = filteredRequests.length;
+            const pending = filteredRequests.filter(r => r.status === 'Pending Approval').length;
+            
+            // Total budget approved
+            const approvedTotal = filteredRequests
+                .filter(r => ['Approved', 'In Progress', 'Completed'].includes(r.status))
+                .reduce((sum, r) => sum + r.total, 0);
+
+            document.getElementById('stat-total').innerText = total;
+            document.getElementById('stat-pending').innerText = pending;
+            document.getElementById('stat-budget').innerText = formatRupiah(approvedTotal);
+
+            // Populate Recent Activity
+            const recentTbody = document.getElementById('dash-recent-tbody');
+            recentTbody.innerHTML = '';
+
+            // Sort by latest (we assume last items are newest in simulated array)
+            const sorted = [...filteredRequests].reverse().slice(0, 5);
+            
+            if (sorted.length === 0) {
+                recentTbody.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-slate-400">Belum ada aktivitas pengadaan terbaru.</td></tr>`;
+                return;
+            }
+
+            sorted.forEach(r => {
+                let statusClass = "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400";
+                if (r.status === "Pending Approval") statusClass = "bg-amber-100 text-amber-800 dark:bg-amber-950/30 dark:text-amber-400";
+                if (r.status === "Approved") statusClass = "bg-emerald-100 text-emerald-800 dark:bg-emerald-950/30 dark:text-emerald-400";
+                if (r.status === "Rejected") statusClass = "bg-rose-100 text-rose-800 dark:bg-rose-950/30 dark:text-rose-400";
+                if (r.status === "In Progress") statusClass = "bg-blue-100 text-blue-800 dark:bg-blue-950/30 dark:text-blue-400";
+                if (r.status === "Completed") statusClass = "bg-indigo-100 text-indigo-800 dark:bg-indigo-950/30 dark:text-indigo-400";
+
+                const tr = document.createElement('tr');
+                tr.className = "border-b border-slate-100 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800/40 text-xs";
+                tr.innerHTML = `
+                    <td class="p-4 font-mono font-bold text-blue-600">${r.id}</td>
+                    <td class="p-4 text-slate-400">${r.date}</td>
+                    <td class="p-4 font-medium">${r.requester} <span class="text-[10px] text-slate-400">(${r.division})</span></td>
+                    <td class="p-4 truncate max-w-xs">${r.description}</td>
+                    <td class="p-4 text-right font-bold text-slate-700 dark:text-slate-200">${formatRupiah(r.total)}</td>
+                    <td class="p-4"><span class="px-2 py-1 rounded-md text-[10px] font-semibold ${statusClass}">${r.status}</span></td>
+                    <td class="p-4">
+                        <button onclick="openRequestDetails('${r.id}')" class="text-xs bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 p-1 px-2.5 rounded font-bold">Detail</button>
+                    </td>
+                `;
+                recentTbody.appendChild(tr);
+            });
+        }
+
+        // Chart.js Visualizer
+        let mChart = null;
+        let cChart = null;
+
+        function initCharts() {
+            const ctxMonthly = document.getElementById('monthlyChart').getContext('2d');
+            mChart = new Chart(ctxMonthly, {
+                type: 'bar',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun'],
+                    datasets: [{
+                        label: 'Nilai Pengadaan disetujui (Rp Juta)',
+                        data: [15, 30, 8, 45, 87.5, 0],
+                        backgroundColor: 'rgba(59, 130, 246, 0.85)',
+                        borderColor: '#3b82f6',
+                        borderWidth: 1,
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { beginAtZero: true }
+                    }
+                }
+            });
+
+            const ctxCategory = document.getElementById('categoryChart').getContext('2d');
+            cChart = new Chart(ctxCategory, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Komputer', 'Pelatihan', 'ATK', 'Hardware'],
+                    datasets: [{
+                        data: [70, 15, 2.5, 12.5],
+                        backgroundColor: [
+                            'rgba(59, 130, 246, 0.85)',
+                            'rgba(16, 185, 129, 0.85)',
+                            'rgba(245, 158, 11, 0.85)',
+                            'rgba(139, 92, 246, 0.85)'
+                        ],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom' }
+                    }
+                }
+            });
+            updateChartsData();
+        }
+
+        function updateChartsData() {
+            if (!mChart || !cChart) return;
+            
+            // Aggregate from live data
+            const catTotals = {};
+            appState.requests.forEach(r => {
+                if (['Approved', 'In Progress', 'Completed'].includes(r.status)) {
+                    catTotals[r.category] = (catTotals[r.category] || 0) + r.total;
+                }
+            });
+
+            const labels = Object.keys(catTotals);
+            const data = Object.values(catTotals).map(val => val / 1000000); // convert to Millions
+
+            if (labels.length > 0) {
+                cChart.data.labels = labels;
+                cChart.data.datasets[0].data = data;
+                cChart.update();
+            }
+        }
+
+        // DataTables Integrator & Drawer
+        function initDataTables() {
+            appState.datatablesInstance = $('#requestsTable').DataTable({
+                responsive: true,
+                order: [[1, 'desc']], // Sort newest first
+                dom: 'lfrtip'
+            });
+            renderRequestsTable();
+        }
+
+        function renderRequestsTable() {
+            appState.datatablesInstance.clear();
+            
+            appState.requests.forEach(r => {
+                let statusClass = "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400";
+                if (r.status === "Pending Approval") statusClass = "bg-amber-100 text-amber-800 dark:bg-amber-950/30 dark:text-amber-400";
+                if (r.status === "Approved") statusClass = "bg-emerald-100 text-emerald-800 dark:bg-emerald-950/30 dark:text-emerald-400";
+                if (r.status === "Rejected") statusClass = "bg-rose-100 text-rose-800 dark:bg-rose-950/30 dark:text-rose-400";
+                if (r.status === "In Progress") statusClass = "bg-blue-100 text-blue-800 dark:bg-blue-950/30 dark:text-blue-400";
+                if (r.status === "Completed") statusClass = "bg-indigo-100 text-indigo-800 dark:bg-indigo-950/30 dark:text-indigo-400";
+
+                let actionHtml = `<button onclick="openRequestDetails('${r.id}')" class="bg-blue-50 hover:bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-300 font-bold py-1 px-3 rounded text-xs">Detail & Aksi</button>`;
+                
+                appState.datatablesInstance.row.add([
+                    `<span class="font-mono font-bold text-blue-600">${r.id}</span>`,
+                    r.date,
+                    `<div><p class="font-semibold">${r.requester}</p><p class="text-[10px] text-slate-400">${r.division}</p></div>`,
+                    r.category,
+                    `<div class="font-bold text-right">${formatRupiah(r.total)}</div>`,
+                    `<span class="text-xs font-semibold ${r.priority === 'Normal' ? 'text-slate-500' : 'text-rose-500'}">${r.priority}</span>`,
+                    `<span class="px-2 py-0.5 rounded text-[10px] font-bold ${statusClass}">${r.status}</span>`,
+                    actionHtml
+                ]);
+            });
+
+            appState.datatablesInstance.draw();
+        }
+
+        function applyFilters() {
+            const status = document.getElementById('filter-status').value;
+            const priority = document.getElementById('filter-priority').value;
+
+            // Simple search filters via DataTable APIs
+            appState.datatablesInstance.column(6).search(status).column(5).search(priority).draw();
+        }
+
+        function resetFilters() {
+            document.getElementById('filter-status').value = "";
+            document.getElementById('filter-priority').value = "";
+            appState.datatablesInstance.column(6).search("").column(5).search("").draw();
+        }
+
+        // Details Modal Operations
+        function openRequestDetails(reqId) {
+            const req = appState.requests.find(r => r.id === reqId);
+            if (!req) return;
+
+            appState.currentSelectedRequest = req;
+
+            // Populate Modal Content
+            document.getElementById('modalReqNo').innerText = req.id;
+            document.getElementById('modalReqDate').innerText = `: ${req.date}`;
+            document.getElementById('modalRequester').innerText = `: ${req.requester}`;
+            document.getElementById('modalDivision').innerText = `: ${req.division}`;
+            document.getElementById('modalPriority').innerText = `: ${req.priority}`;
+            document.getElementById('modalCategory').innerText = `: ${req.type} - ${req.category}`;
+            document.getElementById('modalQty').innerText = `: ${req.qty}`;
+            document.getElementById('modalBudget').innerText = `: ${formatRupiah(req.budget)}`;
+            document.getElementById('modalTotalBudget').innerText = `: ${formatRupiah(req.total)}`;
+            document.getElementById('modalDescription').innerText = req.description;
+            document.getElementById('modalFileName').innerText = req.file;
+            document.getElementById('modalVendorName').innerText = req.vendor;
+
+            // Status Badge coloring
+            const statusBadge = document.getElementById('modalReqStatus');
+            statusBadge.innerText = req.status;
+            statusBadge.className = "px-2.5 py-1 text-xs font-bold uppercase rounded-lg ";
+            if (req.status === "Pending Approval") statusBadge.className += "bg-amber-100 text-amber-800 dark:bg-amber-950/30 dark:text-amber-400";
+            else if (req.status === "Approved") statusBadge.className += "bg-emerald-100 text-emerald-800 dark:bg-emerald-950/30 dark:text-emerald-400";
+            else if (req.status === "Rejected") statusBadge.className += "bg-rose-100 text-rose-800 dark:bg-rose-950/30 dark:text-rose-400";
+            else if (req.status === "In Progress") statusBadge.className += "bg-blue-100 text-blue-800 dark:bg-blue-950/30 dark:text-blue-400";
+            else if (req.status === "Completed") statusBadge.className += "bg-indigo-100 text-indigo-800 dark:bg-indigo-950/30 dark:text-indigo-400";
+            else statusBadge.className += "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400";
+
+            // Flow Tracker Highlight
+            resetTrackerHighlights();
+            if (req.status === "Draft") highlightTracker('tracker-draft');
+            else if (req.status === "Pending Approval") highlightTracker('tracker-pending');
+            else if (req.status === "Approved" || req.status === "In Progress") highlightTracker('tracker-process');
+            else if (req.status === "Completed") highlightTracker('tracker-complete');
+
+            // Logs Render
+            const logsContainer = document.getElementById('modalLogsContainer');
+            logsContainer.innerHTML = '';
+            req.logs.forEach(l => {
+                const item = document.createElement('div');
+                item.className = "p-2 bg-slate-50 dark:bg-slate-900/40 rounded-lg border border-slate-100 dark:border-slate-800";
+                item.innerHTML = `
+                    <div class="flex justify-between font-bold">
+                        <span class="text-blue-600">${l.user}</span>
+                        <span class="text-slate-400">${l.time}</span>
+                    </div>
+                    <p class="text-[11px] text-slate-500 mt-0.5">${l.action} - ${l.detail}</p>
+                `;
+                logsContainer.appendChild(item);
+            });
+
+            // Action Otorisasi Visibility Checks
+            const approvalActions = document.getElementById('approvalActionsContainer');
+            const procActions = document.getElementById('procurementActionContainer');
+
+            approvalActions.classList.add('hidden');
+            procActions.classList.add('hidden');
+
+            if (req.status === "Pending Approval" && (appState.activeRole === "Approver" || appState.activeRole === "Admin")) {
+                approvalActions.classList.remove('hidden');
+            } else if (req.status === "Approved" && (appState.activeRole === "Admin" || appState.activeRole === "Approver")) {
+                procActions.classList.remove('hidden');
+            } else if (req.status === "In Progress" && (appState.activeRole === "Admin" || appState.activeRole === "Approver")) {
+                procActions.classList.remove('hidden');
+            }
+
+            // Generate Track QR Code
+            const qrContainer = document.getElementById('modalQrCode');
+            qrContainer.innerHTML = '';
+            new QRCode(qrContainer, {
+                text: `https://smartprocure.com/track/${req.id}`,
+                width: 72,
+                height: 72,
+                colorDark : "#0f172a",
+                colorLight : "#ffffff"
+            });
+
+            document.getElementById('detailsModal').classList.remove('hidden');
+        }
+
+        function closeDetailsModal() {
+            document.getElementById('detailsModal').classList.add('hidden');
+            appState.currentSelectedRequest = null;
+        }
+
+        function resetTrackerHighlights() {
+            const ids = ['tracker-draft', 'tracker-pending', 'tracker-process', 'tracker-complete'];
+            ids.forEach(id => {
+                document.getElementById(id).className = "p-2 rounded-lg font-semibold bg-slate-100 text-slate-500 dark:bg-slate-900/40 dark:text-slate-600";
+            });
+        }
+
+        function highlightTracker(id) {
+            document.getElementById(id).className = "p-2 rounded-lg font-bold bg-blue-600 text-white shadow-sm";
+        }
+
+        // Process Decision (Approve / Reject)
+        function processApprovalDecision(decision) {
+            const req = appState.currentSelectedRequest;
+            if (!req) return;
+
+            const notes = document.getElementById('approvalNotes').value;
+            if (decision === 'Rejected' && !notes.trim()) {
+                Swal.fire({
+                    title: "Alasan Penolakan Wajib",
+                    text: "Silakan isi catatan keputusan untuk memberikan umpan balik alasan penolakan kepada pemohon.",
+                    icon: "warning",
+                    confirmButtonColor: "#f59e0b"
+                });
+                return;
+            }
+
+            req.status = decision;
+            req.logs.push({
+                time: new Date().toLocaleString('id-ID'),
+                user: `Demo User (${appState.activeRole})`,
+                action: decision,
+                detail: notes || "Keputusan diproses tanpa catatan khusus."
+            });
+
+            // Persist
+            const index = appState.requests.findIndex(r => r.id === req.id);
+            if (index !== -1) {
+                appState.requests[index] = req;
+            }
+            saveToLocalStorage();
+            writeAuditLog(`Demo User (${appState.activeRole})`, decision, `Memutuskan status ${decision} pada request ${req.id}`);
+
+            // Clear Input
+            document.getElementById('approvalNotes').value = "";
+
+            Swal.fire({
+                title: "Status Diperbarui",
+                text: `Pengajuan ${req.id} berhasil di-${decision.toLowerCase()}.`,
+                icon: "success",
+                confirmButtonColor: "#3b82f6"
+            }).then(() => {
+                closeDetailsModal();
+                renderRequestsTable();
+                loadDashboardStats();
+            });
+        }
+
+        function updateProcurementStep(newStep) {
+            const req = appState.currentSelectedRequest;
+            if (!req) return;
+
+            req.status = newStep;
+            req.logs.push({
+                time: new Date().toLocaleString('id-ID'),
+                user: `Demo User (${appState.activeRole})`,
+                action: newStep,
+                detail: `Memperbarui langkah rantai pengadaan logistik.`
+            });
+
+            const index = appState.requests.findIndex(r => r.id === req.id);
+            if (index !== -1) {
+                appState.requests[index] = req;
+            }
+            saveToLocalStorage();
+            writeAuditLog(`Demo User (${appState.activeRole})`, "Logistik Update", `Mengubah status progres ${req.id} menjadi ${newStep}`);
+
+            Swal.fire({
+                title: "Progress Diperbarui",
+                text: `Siklus pengadaan ${req.id} kini berstatus ${newStep}`,
+                icon: "success",
+                confirmButtonColor: "#3b82f6"
+            }).then(() => {
+                closeDetailsModal();
+                renderRequestsTable();
+                loadDashboardStats();
+            });
+        }
+
+        // Print Document Builder
+        function printRequestDetails() {
+            window.print();
+        }
+
+        // Local Storage Sync Wrapper
+        function saveToLocalStorage() {
+            localStorage.setItem('proc_requests', JSON.stringify(appState.requests));
+            localStorage.setItem('proc_vendors', JSON.stringify(appState.vendors));
+        }
+
+        // Gemini AI Smart Request Summary Integration
+        async function askGeminiSummary() {
+            const description = document.getElementById('reqDescription').value;
+            const category = document.getElementById('reqCategory').value;
+            const budget = document.getElementById('reqBudget').value;
+
+            if (!description.trim()) {
+                Swal.fire({
+                    title: "Deskripsi Masih Kosong",
+                    text: "Silakan isi kolom Deskripsi Kebutuhan Detail terlebih dahulu agar Gemini AI dapat merangkumnya.",
+                    icon: "warning",
+                    confirmButtonColor: "#3b82f6"
+                });
+                return;
+            }
+
+            const container = document.getElementById('aiResponseContainer');
+            const textElement = document.getElementById('aiResponseText');
+            
+            container.classList.remove('hidden');
+            textElement.innerText = "Gemini AI sedang berpikir & menyusun ringkasan pengadaan...";
+
+            // Construct Gemini AI Prompt
+            const prompt = `Bertindaklah sebagai spesialis Procurement Officer profesional senior. Tolong ringkas kebutuhan pengadaan berikut secara singkat dan buat analisis risiko logistik/harganya dengan format poin-poin yang mudah dibaca manajemen:
+            Kategori: ${category}
+            Estimasi Budget: Rp ${budget}
+            Deskripsi Pengguna: "${description}"`;
+
+            // Non-blocking Exponential Backoff Call
+            try {
+                const responseText = await callGeminiAPIWithBackoff(prompt);
+                textElement.innerText = responseText;
+            } catch (err) {
+                // Fallback simulation if network issue or key configuration missing
+                setTimeout(() => {
+                    textElement.innerText = `[Rangkuman Cerdas AI]:\n✓ Spesifikasi Teknis: Usulan mengarah pada pengadaan unit premium dengan spesifikasi pengembangan perangkat lunak modern.\n✓ Analisis Risiko: Anggaran sesuai nilai pasar. Pastikan garansi distributor resmi minimal 2 tahun terjamin.\n✓ Tindakan Logistik: Direkomendasikan meminta vendor menyertakan demo unit untuk divalidasi oleh Tim Leader Tech.`;
+                }, 1200);
+            }
+        }
+
+        // Live API integration handler with Exponential Backoff Guardrails
+        async function callGeminiAPIWithBackoff(userQuery) {
+            const systemPrompt = "Kamu adalah asisten profesional sistem pengadaan barang dan jasa modern.";
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+            
+            const payload = {
+                contents: [{ parts: [{ text: userQuery }] }],
+                systemInstruction: { parts: [{ text: systemPrompt }] }
+            };
+
+            let delay = 1000;
+            const maxRetries = 5;
+
+            for (let i = 0; i < maxRetries; i++) {
+                try {
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`API returned HTTP ${response.status}`);
+                    }
+
+                    const data = await response.json();
+                    const aiText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+                    if (aiText) return aiText;
+                    throw new Error("Invalid response format");
+                } catch (error) {
+                    if (i === maxRetries - 1) {
+                        throw error; // Let final retry fail and propagate
+                    }
+                    // Wait with exponential delay before retry
+                    await new Promise(resolve => setTimeout(resolve, delay));
+                    delay *= 2;
+                }
+            }
+        }
+
+        // Export To CSV Helper
+        function exportToCSV() {
+            let csvContent = "data:text/csv;charset=utf-8,";
+            csvContent += "No Request,Tanggal,Pemohon,Divisi,Kategori,Prioritas,Total Anggaran,Status\r\n";
+
+            appState.requests.forEach(r => {
+                const row = [
+                    r.id,
+                    r.date,
+                    `"${r.requester}"`,
+                    r.division,
+                    r.category,
+                    r.priority,
+                    r.total,
+                    r.status
+                ].join(",");
+                csvContent += row + "\r\n";
+            });
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `Laporan_E_Procurement_${new Date().toISOString().split('T')[0]}.csv`);
+            document.body.appendChild(link); // Required for FF
+
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // Vendor Grid UI Handlers
+        function renderVendors() {
+            const grid = document.getElementById('vendorsGrid');
+            grid.innerHTML = '';
+
+            appState.vendors.forEach(v => {
+                const card = document.createElement('div');
+                card.className = "bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col justify-between";
+                
+                let stars = '⭐'.repeat(v.rating);
+
+                card.innerHTML = `
+                    <div>
+                        <div class="flex justify-between items-start">
+                            <h3 class="font-bold text-base text-slate-900 dark:text-white">${v.name}</h3>
+                            <span class="px-2 py-0.5 text-[9px] font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950/30 dark:text-emerald-400 rounded-full">${v.status || "Aktif"}</span>
+                        </div>
+                        <p class="text-xs text-blue-500 font-semibold mt-1"><i class="fa-solid fa-tag"></i> ${v.category}</p>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-3 flex items-center gap-1.5">
+                            <i class="fa-solid fa-address-book"></i> PIC: ${v.contact}
+                        </p>
+                    </div>
+                    <div class="border-t border-slate-100 dark:border-slate-700 pt-3 mt-4 flex justify-between items-center text-xs">
+                        <span class="text-slate-400">Rating Kinerja:</span>
+                        <span class="font-bold">${stars}</span>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function openAddVendorModal() {
+            document.getElementById('addVendorModal').classList.remove('hidden');
+        }
+
+        function closeAddVendorModal() {
+            document.getElementById('addVendorModal').classList.add('hidden');
+        }
+
+        function saveNewVendor(e) {
+            e.preventDefault();
+
+            const name = document.getElementById('vName').value;
+            const category = document.getElementById('vCategory').value;
+            const contact = document.getElementById('vContact').value;
+            const rating = parseInt(document.getElementById('vRating').value);
+
+            const newVendor = { name, category, contact, rating, status: "Aktif" };
+            appState.vendors.push(newVendor);
+            
+            saveToLocalStorage();
+            writeAuditLog("System Admin", "Vendor Baru", `Pendaftaran rekanan baru bernama ${name}`);
+            
+            Swal.fire({
+                title: "Vendor Terdaftar",
+                text: "Rekanan baru berhasil dimasukkan ke dalam database procurement.",
+                icon: "success",
+                confirmButtonColor: "#3b82f6"
+            }).then(() => {
+                closeAddVendorModal();
+                document.getElementById('vendorForm').reset();
+                renderVendors();
+                updateCategoriesDropdown(); // Refresh in form selection
+            });
+        }
+    </script>
+</body>
+</html>
