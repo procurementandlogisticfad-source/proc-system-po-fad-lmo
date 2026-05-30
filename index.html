@@ -49,6 +49,34 @@
     </div>
   </div>
 
+  <!-- ================= MODAL DIAGNOSTIK ERROR DRIVE ================= -->
+  <div id="driveErrorModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[110] flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-100 space-y-4 text-center">
+      <div class="mx-auto w-16 h-16 bg-rose-50 text-rose-600 rounded-full flex items-center justify-center text-3xl">
+        <i class="fa-solid fa-triangle-exclamation animate-bounce"></i>
+      </div>
+      <div>
+        <h3 class="text-lg font-black text-slate-800">Izin Google Drive Belum Diaktifkan</h3>
+        <p class="text-xs text-slate-500 mt-2 leading-relaxed">
+          Google Apps Script membutuhkan otorisasi manual Anda untuk mengunggah dokumen & foto ke Google Drive database Anda.
+        </p>
+      </div>
+      
+      <!-- Tutorial Instan -->
+      <div class="bg-slate-50 p-4 rounded-2xl text-left text-xs text-slate-600 space-y-2 border border-slate-100 font-medium">
+        <p class="font-bold text-slate-700"><i class="fa-solid fa-circle-info text-blue-500"></i> Cara Memperbaiki dalam 30 Detik:</p>
+        <p>1. Buka halaman editor <b>Google Apps Script</b> Anda.</p>
+        <p>2. Pada menu fungsi di bagian atas, pilih fungsi bernama <b>"otorisasiDriveDanSheet"</b>.</p>
+        <p>3. Klik tombol <b>▷ Run</b> (Jalankan) di sebelah kirinya.</p>
+        <p>4. Popup otorisasi Google akan muncul. Klik <b>Review Permissions</b> -> pilih akun Anda -> Klik <b>Advanced</b> (Lanjutan) -> Klik <b>Go to Database PO FAD-LMO (unsafe)</b> -> Klik <b>Allow</b> (Izinkan).</p>
+      </div>
+
+      <button onclick="closeDriveErrorModal()" class="w-full py-3 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-xl text-xs uppercase tracking-wider transition">
+        Saya Mengerti, Tutup Panduan
+      </button>
+    </div>
+  </div>
+
   <!-- ================= AUTH PAGE (SIGN IN & SIGN UP) ================= -->
   <section id="authPage" class="flex-1 flex items-center justify-center px-4 py-8">
     <div class="bg-white rounded-3xl shadow-xl border border-slate-100 max-w-4xl w-full grid grid-cols-1 md:grid-cols-2 overflow-hidden min-h-[580px]">
@@ -670,6 +698,37 @@
       }, 300);
     }
 
+    // --- DIAGNOSTIK ERROR DRIVE MODAL ---
+    function triggerDriveDiagnostics() {
+      document.getElementById("driveErrorModal").classList.remove("hidden");
+    }
+
+    function closeDriveErrorModal() {
+      document.getElementById("driveErrorModal").classList.add("hidden");
+    }
+
+    // --- FORM RENDERER UNTUK LAMPIRAN AMAN (MENCEGAH ERROR 404 JIKA DRIVE TIDAK TEROTORISASI) ---
+    function buildFileButton(url, title, type = "emerald") {
+      if (!url || url === "-") {
+        return "<span class='text-slate-400 font-medium'>Tidak Ada</span>";
+      }
+      
+      // Deteksi jika link adalah string error dari Google Drive
+      if (url.startsWith("Error Upload") || url.indexOf("Exception") !== -1) {
+        return `<span onclick="triggerDriveDiagnostics()" class="px-2.5 py-1 bg-rose-50 text-rose-600 border border-rose-200 rounded-lg hover:bg-rose-100 font-bold transition flex items-center gap-1 justify-center max-w-[140px] cursor-pointer" title="${url}">
+                  <i class="fa-solid fa-triangle-exclamation"></i> Izin Drive ⚠️
+                </span>`;
+      }
+      
+      const btnColor = type === "emerald" 
+        ? "bg-emerald-50 text-emerald-600 border-emerald-200 hover:bg-emerald-100" 
+        : "bg-blue-50 text-blue-600 border-blue-200 hover:bg-blue-100";
+
+      return `<a href="${url}" target="_blank" class="px-2.5 py-1 ${btnColor} border rounded-lg font-bold transition flex items-center gap-1 justify-center max-w-[120px]">
+                <i class="fa-solid fa-paperclip"></i> ${title}
+              </a>`;
+    }
+
     // --- LOADING SYSTEM ---
     function showLoader(text) {
       document.getElementById("loaderText").innerText = text;
@@ -1013,10 +1072,10 @@
         } else {
           allRequestsCache.forEach(item => {
             const hasAttachment = item.lampiran && item.lampiran !== "-";
-            const attachmentLink = hasAttachment ? `<a href="${item.lampiran}" target="_blank" class="text-emerald-600 hover:underline font-bold flex items-center gap-1"><i class="fa-solid fa-paperclip"></i> Lihat Lampiran</a>` : "<span class='text-slate-400 font-medium'>Tanpa Berkas</span>";
+            const attachmentLink = buildFileButton(item.lampiran, "Lihat File", "emerald");
             
             const hasEvidence = item.evidence && item.evidence !== "-";
-            const evidenceDisplay = hasEvidence ? `<p class="text-xs text-blue-600 font-bold mt-1 bg-blue-50 p-2 rounded-lg flex items-center gap-1.5"><i class="fa-solid fa-file-signature"></i> Bukti Serah Terima: <a href="${item.evidence}" target="_blank" class="underline hover:text-blue-800">Lihat Berkas Dokumen/Foto</a></p>` : "";
+            const evidenceDisplay = hasEvidence ? `<p class="text-xs text-blue-600 font-bold mt-1 bg-blue-50 p-2 rounded-lg flex items-center gap-1.5"><i class="fa-solid fa-file-signature"></i> Bukti Serah Terima: ${buildFileButton(item.evidence, "DO / BA", "blue")}</p>` : "";
 
             let prioBadge = "bg-slate-100 text-slate-700";
             if (item.prioritas === "Urgent") prioBadge = "bg-rose-100 text-rose-700";
@@ -1053,7 +1112,7 @@
                 </div>
                 <div class="pt-2 text-xs text-slate-500 border-t border-slate-50 space-y-1">
                   <p><strong>Batas Kebutuhan:</strong> ${item.tanggal_kebutuhan}</p>
-                  <p><strong>Lampiran Referensi:</strong> ${attachmentLink}</p>
+                  <p class="flex items-center gap-2"><strong>Lampiran Referensi:</strong> ${attachmentLink}</p>
                   ${evidenceDisplay}
                 </div>
                 ${actionButtons}
@@ -1098,8 +1157,8 @@
           else if (item.status === "Selesai") statusBadge = "bg-blue-100 text-blue-700";
           else if (item.status === "Ditolak") statusBadge = "bg-rose-100 text-rose-700";
 
-          const hasEvidence = item.evidence && item.evidence !== "-";
-          const evidenceCell = hasEvidence ? `<a href="${item.evidence}" target="_blank" class="text-blue-600 hover:underline font-bold flex items-center justify-center gap-1 text-xs"><i class="fa-solid fa-file-contract"></i> DO / BA</a>` : "<span class='text-slate-400'>Belum Ada</span>";
+          // Gunakan render file button yang aman
+          const evidenceCell = buildFileButton(item.evidence, "DO / BA", "blue");
 
           // Format Date untuk Estimasi Kedatangan saat di-render
           let formattedKedatangan = "-";
@@ -1127,7 +1186,7 @@
               <td class="p-4 text-right font-semibold text-slate-600">Rp ${Number(item.estimasi_budget).toLocaleString('id-ID')}</td>
               <td class="p-4 text-right font-extrabold text-slate-800">Rp ${Number(item.total_anggaran).toLocaleString('id-ID')}</td>
               <td class="p-4 text-slate-600 font-semibold">${formattedKedatangan}</td>
-              <td class="p-4 text-center">${evidenceCell}</td>
+              <td class="p-4 text-center flex items-center justify-center">${evidenceCell}</td>
               <td class="p-4">
                 <span class="px-2 py-0.5 rounded-full font-bold text-[10px] ${statusBadge}">${item.status}</span>
               </td>
@@ -1161,9 +1220,8 @@
           else if (item.status === "Selesai") statusBadge = "bg-blue-100 text-blue-700";
           else if (item.status === "Ditolak") statusBadge = "bg-rose-100 text-rose-700";
 
-          // Tombol Lampiran Pengaju Awal untuk diletakkan di Tabel Admin
-          const hasAttachment = item.lampiran && item.lampiran !== "-";
-          const lampiranCell = hasAttachment ? `<a href="${item.lampiran}" target="_blank" class="px-2.5 py-1 bg-emerald-50 text-emerald-600 border border-emerald-200 rounded-lg hover:bg-emerald-100 font-bold transition flex items-center gap-1 justify-center max-w-[120px]"><i class="fa-solid fa-paperclip"></i> Lihat File</a>` : "<span class='text-slate-400'>Tidak Ada</span>";
+          // Tombol Lampiran Pengaju Awal untuk diletakkan di Tabel Admin (Aman)
+          const lampiranCell = buildFileButton(item.lampiran, "Lihat File", "emerald");
 
           tbody.innerHTML += `
             <tr class="hover:bg-slate-50 transition border-b border-slate-100">
