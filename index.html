@@ -9,7 +9,7 @@
   <!-- FontAwesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght=300;400;500;600;700;800&display=swap');
     body {
       font-family: 'Plus Jakarta Sans', sans-serif;
     }
@@ -423,6 +423,7 @@
                   <th class="p-4">Tanggal / Pemohon</th>
                   <th class="p-4">Deskripsi Pengadaan</th>
                   <th class="p-4">Prioritas</th>
+                  <th class="p-4">Lampiran Pengaju</th>
                   <th class="p-4">Status</th>
                   <th class="p-4 text-center">Tindakan</th>
                 </tr>
@@ -1144,7 +1145,7 @@
       if (dataList.length === 0) {
         tbody.innerHTML = `
           <tr>
-            <td colspan="6" class="p-8 text-center text-slate-400 font-semibold">Tidak ada berkas pengajuan masuk.</td>
+            <td colspan="7" class="p-8 text-center text-slate-400 font-semibold">Tidak ada berkas pengajuan masuk.</td>
           </tr>
         `;
       } else {
@@ -1160,6 +1161,10 @@
           else if (item.status === "Selesai") statusBadge = "bg-blue-100 text-blue-700";
           else if (item.status === "Ditolak") statusBadge = "bg-rose-100 text-rose-700";
 
+          // Tombol Lampiran Pengaju Awal untuk diletakkan di Tabel Admin
+          const hasAttachment = item.lampiran && item.lampiran !== "-";
+          const lampiranCell = hasAttachment ? `<a href="${item.lampiran}" target="_blank" class="px-2.5 py-1 bg-emerald-50 text-emerald-600 border border-emerald-200 rounded-lg hover:bg-emerald-100 font-bold transition flex items-center gap-1 justify-center max-w-[120px]"><i class="fa-solid fa-paperclip"></i> Lihat File</a>` : "<span class='text-slate-400'>Tidak Ada</span>";
+
           tbody.innerHTML += `
             <tr class="hover:bg-slate-50 transition border-b border-slate-100">
               <td class="p-4 font-mono font-bold text-indigo-600">${item.no_request}</td>
@@ -1174,6 +1179,7 @@
               <td class="p-4">
                 <span class="px-2.5 py-0.5 rounded font-bold ${prioBadge}">${item.prioritas}</span>
               </td>
+              <td class="p-4">${lampiranCell}</td>
               <td class="p-4">
                 <span class="px-2.5 py-0.5 rounded font-bold ${statusBadge}">${item.status}</span>
               </td>
