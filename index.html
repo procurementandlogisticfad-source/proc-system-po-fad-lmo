@@ -31,7 +31,7 @@
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
 
-  <!-- TOP NOTIFICATION ALERT SYSTEM (GANTI BROWSER ALERT) -->
+  <!-- ================= NOTIFIKASI TOAST CUSTOM ================= -->
   <div id="toast" class="fixed top-5 right-5 z-50 transform translate-y-[-150%] transition-transform duration-300 ease-out max-w-md w-full p-4 rounded-xl shadow-2xl flex items-start gap-3 border hidden">
     <div id="toastIcon" class="p-2 rounded-lg text-white"></div>
     <div class="flex-1">
@@ -41,130 +41,118 @@
     <button onclick="hideToast()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark"></i></button>
   </div>
 
-  <!-- LOADING SPINNER MODAL -->
+  <!-- ================= SPINNER LOADING MODAL ================= -->
   <div id="loaderModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[100] flex items-center justify-center hidden">
     <div class="bg-white p-6 rounded-2xl shadow-xl flex flex-col items-center gap-4 text-center max-w-xs">
       <div class="animate-spin rounded-full h-12 w-12 border-4 border-blue-600 border-t-transparent"></div>
-      <p id="loaderText" class="text-sm font-semibold text-slate-700">Memproses data ke sistem...</p>
+      <p id="loaderText" class="text-sm font-semibold text-slate-700">Menghubungkan ke server...</p>
     </div>
   </div>
 
-  <!-- CONFIGURATION MODAL (SETUP URL SPREADSHEET API) -->
-  <div id="configModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[90] flex items-center justify-center p-4">
-    <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-100">
-      <div class="flex items-center gap-3 text-blue-600 mb-4">
-        <div class="p-3 bg-blue-50 rounded-xl text-xl"><i class="fa-solid fa-gears"></i></div>
-        <h3 class="text-lg font-bold">Koneksi Database Google Sheet</h3>
-      </div>
-      <p class="text-xs text-slate-500 mb-4 leading-relaxed">
-        Masukkan URL Web App Apps Script Anda yang sudah di-deploy dari Google Sheets database untuk mengaktifkan sinkronisasi real-time.
-      </p>
-      <div class="space-y-4">
-        <div>
-          <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">Web App API URL</label>
-          <input type="url" id="apiUrlInput" placeholder="https://script.google.com/macros/s/.../exec" class="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-        </div>
-        <button onclick="saveConfig()" class="w-full py-3 bg-blue-600 text-white font-semibold rounded-xl text-sm hover:bg-blue-700 transition duration-200 shadow-md">
-          Hubungkan Database & Mulai
-        </button>
-        <p class="text-[10px] text-center text-slate-400">Database PO FAD-LMO &bull; v1.0.0</p>
-      </div>
-    </div>
-  </div>
-
-  <!-- ================= AUTH PAGE (LOGIN & REGISTER) ================= -->
-  <section id="authPage" class="flex-1 flex items-center justify-center px-4 py-12">
-    <div class="bg-white rounded-3xl shadow-xl border border-slate-100 max-w-4xl w-full grid grid-cols-1 md:grid-cols-2 overflow-hidden min-h-[550px]">
+  <!-- ================= AUTH PAGE (SIGN IN & SIGN UP) ================= -->
+  <section id="authPage" class="flex-1 flex items-center justify-center px-4 py-8">
+    <div class="bg-white rounded-3xl shadow-xl border border-slate-100 max-w-4xl w-full grid grid-cols-1 md:grid-cols-2 overflow-hidden min-h-[580px]">
       
-      <!-- Kiri: Banner Info Visual -->
-      <div class="bg-gradient-to-tr from-blue-700 to-indigo-900 text-white p-10 flex flex-col justify-between relative overflow-hidden">
-        <div class="absolute -top-10 -right-10 w-40 h-40 bg-white/10 rounded-full blur-2xl"></div>
-        <div class="absolute -bottom-10 -left-10 w-40 h-40 bg-white/10 rounded-full blur-2xl"></div>
+      <!-- Sisi Kiri: Banner Info Visual Modern -->
+      <div class="bg-gradient-to-tr from-blue-700 via-indigo-800 to-slate-950 text-white p-10 flex flex-col justify-between relative overflow-hidden">
+        <div class="absolute -top-10 -right-10 w-44 h-44 bg-white/10 rounded-full blur-2xl"></div>
+        <div class="absolute -bottom-10 -left-10 w-44 h-44 bg-white/10 rounded-full blur-2xl"></div>
         
-        <div class="flex items-center gap-3">
-          <div class="p-2.5 bg-white/10 rounded-xl"><i class="fa-solid fa-boxes-packing text-lg"></i></div>
-          <span class="font-extrabold tracking-wider text-sm uppercase">FAD-LMO Procurement</span>
+        <div class="flex items-center gap-3 relative z-10">
+          <div class="p-2.5 bg-white/10 rounded-xl"><i class="fa-solid fa-boxes-packing text-lg text-blue-300"></i></div>
+          <span class="font-extrabold tracking-wider text-sm uppercase">FAD-LMO Logistics</span>
         </div>
         
-        <div class="my-auto space-y-4">
-          <h1 class="text-3xl font-black leading-tight">Kelola Pengadaan Mudah, Transparan & Cepat.</h1>
-          <p class="text-slate-200 text-sm leading-relaxed">
-            Sistem pengajuan logistik dan barang/jasa terintegrasi langsung dengan database logistik untuk mempercepat alur persetujuan.
+        <div class="my-auto space-y-4 relative z-10">
+          <h1 class="text-3xl font-black leading-tight">Sistem Pengadaan Barang & Jasa Internal</h1>
+          <p class="text-slate-300 text-xs leading-relaxed">
+            Menghubungkan secara instan pemohon (requester) dengan departemen pengadaan (purchasing admin) untuk efisiensi, akuntabilitas, dan transparansi data.
           </p>
+          <div class="pt-2 flex flex-col gap-2">
+            <div class="flex items-center gap-2 text-xs text-slate-300">
+              <i class="fa-solid fa-check text-emerald-400"></i> Integrasi Otomatis Notifikasi Email
+            </div>
+            <div class="flex items-center gap-2 text-xs text-slate-300">
+              <i class="fa-solid fa-check text-emerald-400"></i> Penelusuran Real-time Dokumen PO & Budget
+            </div>
+            <div class="flex items-center gap-2 text-xs text-slate-300">
+              <i class="fa-solid fa-check text-emerald-400"></i> Audit Log Aktivitas Keamanan Data
+            </div>
+          </div>
         </div>
         
-        <div class="text-xs text-slate-300 flex justify-between items-center pt-6 border-t border-white/10">
-          <span>Sistem PO FAD-LMO</span>
-          <span>&copy; 2026</span>
+        <div class="text-xs text-slate-400 flex justify-between items-center pt-6 border-t border-white/10 relative z-10">
+          <span>Portal Database PO FAD-LMO</span>
+          <span>&copy; 2026 v1.2</span>
         </div>
       </div>
 
-      <!-- Kanan: Form Dinamis -->
-      <div class="p-8 flex flex-col justify-center">
+      <!-- Sisi Kanan: Form Dinamis Autentikasi -->
+      <div class="p-8 flex flex-col justify-center bg-slate-50/50">
         <!-- Form LOGIN -->
         <div id="loginFormContainer" class="space-y-6">
           <div class="space-y-1">
-            <h2 class="text-2xl font-bold text-slate-800">Selamat Datang Kembali</h2>
-            <p class="text-xs text-slate-500">Silakan masuk menggunakan akun terdaftar Anda</p>
+            <h2 class="text-2xl font-extrabold text-slate-800">Masuk Akun</h2>
+            <p class="text-xs text-slate-500">Silakan masukkan email & password yang terdaftar</p>
           </div>
           
           <form id="loginForm" class="space-y-4" onsubmit="handleLoginSubmit(event)">
             <div>
-              <label class="block text-xs font-semibold text-slate-500 mb-1">EMAIL PERUSAHAAN</label>
+              <label class="block text-[10px] font-bold text-slate-500 mb-1.5 uppercase tracking-wider">Email Perusahaan</label>
               <div class="relative">
-                <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400"><i class="fa-solid fa-envelope"></i></span>
-                <input type="email" id="loginEmail" required placeholder="name@company.com" class="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400"><i class="fa-solid fa-envelope"></i></span>
+                <input type="email" id="loginEmail" required placeholder="nama@fad.com" class="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
               </div>
             </div>
             
             <div>
-              <label class="block text-xs font-semibold text-slate-500 mb-1">PASSWORD</label>
+              <label class="block text-[10px] font-bold text-slate-500 mb-1.5 uppercase tracking-wider">Password</label>
               <div class="relative">
-                <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400"><i class="fa-solid fa-lock"></i></span>
-                <input type="password" id="loginPassword" required placeholder="••••••••" class="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400"><i class="fa-solid fa-lock"></i></span>
+                <input type="password" id="loginPassword" required placeholder="••••••••" class="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
               </div>
             </div>
 
-            <button type="submit" class="w-full py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl text-sm transition duration-200 shadow-md">
-              Masuk Sekarang
+            <button type="submit" class="w-full py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl text-xs uppercase tracking-wider transition duration-200 shadow-lg shadow-blue-500/20">
+              Masuk Sekarang <i class="fa-solid fa-arrow-right-to-bracket ml-1.5"></i>
             </button>
           </form>
 
           <p class="text-center text-xs text-slate-500">
-            Belum punya akun? <button onclick="toggleAuthForms(false)" class="text-blue-600 font-bold hover:underline">Daftar Akun Baru</button>
+            Belum terdaftar di sistem? <button onclick="toggleAuthForms(false)" class="text-blue-600 font-bold hover:underline">Buat Akun Baru</button>
           </p>
         </div>
 
-        <!-- Form REGISTER (SIGN UP) -->
+        <!-- Form REGISTER -->
         <div id="registerFormContainer" class="space-y-4 hidden">
           <div class="space-y-1">
-            <h2 class="text-2xl font-bold text-slate-800">Daftarkan Akun Baru</h2>
-            <p class="text-xs text-slate-500">Buat akun requester atau tim purchasing disini</p>
+            <h2 class="text-2xl font-extrabold text-slate-800">Daftar Pengguna Baru</h2>
+            <p class="text-xs text-slate-500">Lengkapi formulir di bawah untuk mendaftarkan hak akses Anda</p>
           </div>
           
           <form id="registerForm" class="space-y-3" onsubmit="handleRegisterSubmit(event)">
             <div>
-              <label class="block text-xs font-semibold text-slate-500 mb-1">NAMA LENGKAP</label>
-              <input type="text" id="regNama" required placeholder="Galang Yusalfarisi" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+              <label class="block text-[10px] font-bold text-slate-500 mb-1 uppercase tracking-wider">Nama Lengkap</label>
+              <input type="text" id="regNama" required placeholder="Nama Lengkap Sesuai ID Card" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
             </div>
             
             <div>
-              <label class="block text-xs font-semibold text-slate-500 mb-1">EMAIL AKUN</label>
-              <input type="email" id="regEmail" required placeholder="galang@fad.com" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+              <label class="block text-[10px] font-bold text-slate-500 mb-1 uppercase tracking-wider">Email Akun</label>
+              <input type="email" id="regEmail" required placeholder="username@fad.com" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
             </div>
 
             <div class="grid grid-cols-2 gap-3">
               <div>
-                <label class="block text-xs font-semibold text-slate-500 mb-1">HAK AKSES / ROLE</label>
-                <select id="regRole" onchange="handleRoleChange()" class="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
+                <label class="block text-[10px] font-bold text-slate-500 mb-1 uppercase tracking-wider">Hak Akses (Role)</label>
+                <select id="regRole" onchange="handleRoleChange()" class="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white font-medium">
                   <option value="Requester">Requester (Pemohon)</option>
                   <option value="Admin">Admin (Purchasing)</option>
                 </select>
               </div>
               
               <div>
-                <label class="block text-xs font-semibold text-slate-500 mb-1">DIVISI KERJA</label>
-                <select id="regDivisi" class="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
+                <label class="block text-[10px] font-bold text-slate-500 mb-1 uppercase tracking-wider">Divisi Kerja</label>
+                <select id="regDivisi" class="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white font-medium">
                   <option value="Logistik">Logistik</option>
                   <option value="Plant">Plant</option>
                   <option value="Produksi">Produksi</option>
@@ -178,44 +166,50 @@
             </div>
             
             <div>
-              <label class="block text-xs font-semibold text-slate-500 mb-1">PASSWORD BARU</label>
-              <input type="password" id="regPassword" required placeholder="Buat sandi rumit" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+              <label class="block text-[10px] font-bold text-slate-500 mb-1 uppercase tracking-wider">Kata Sandi (Password)</label>
+              <input type="password" id="regPassword" required placeholder="••••••••" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
             </div>
 
-            <button type="submit" class="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl text-sm transition duration-200 shadow-md">
-              Daftar Sekarang
+            <button type="submit" class="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl text-xs uppercase tracking-wider transition duration-200 shadow-md">
+              Kirim Pendaftaran <i class="fa-solid fa-user-plus ml-1.5"></i>
             </button>
           </form>
 
           <p class="text-center text-xs text-slate-500">
-            Sudah punya akun? <button onclick="toggleAuthForms(true)" class="text-blue-600 font-bold hover:underline">Masuk Aplikasi</button>
+            Sudah terdaftar? <button onclick="toggleAuthForms(true)" class="text-blue-600 font-bold hover:underline">Masuk Portal</button>
           </p>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- ================= APP DASHBOARD SYSTEM ================= -->
+  <!-- ================= APP WORKSPACE SYSTEM ================= -->
   <section id="appDashboard" class="flex-1 flex flex-col hidden">
-    <!-- Navbar Premium -->
-    <header class="bg-white border-b border-slate-100 shadow-sm sticky top-0 z-40">
+    
+    <!-- Navbar Dinamis (Warna Berbeda Sesuai Role) -->
+    <header id="appNavbar" class="border-b transition-colors duration-300 bg-white border-slate-200/80 shadow-sm sticky top-0 z-40">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         <div class="flex items-center gap-3">
-          <div class="p-2 bg-blue-600 rounded-xl text-white"><i class="fa-solid fa-boxes-packing"></i></div>
+          <div id="navLogoContainer" class="p-2.5 rounded-xl text-white transition-colors duration-300">
+            <i class="fa-solid fa-boxes-packing text-base"></i>
+          </div>
           <div>
             <h1 class="text-base font-bold text-slate-800 leading-tight">PO FAD-LMO Portal</h1>
-            <p class="text-[10px] text-slate-500">Sistem Pengadaan Barang & Jasa</p>
+            <p class="text-[10px] text-slate-500 font-medium">Sistem Monitoring Logistik & Pengadaan</p>
           </div>
         </div>
 
         <div class="flex items-center gap-4">
-          <!-- Profil & Badge Role -->
+          <!-- Profil & Badge Identitas Dinamis -->
           <div class="hidden sm:flex flex-col text-right">
-            <span id="userName" class="text-sm font-bold text-slate-700">Nama Pengguna</span>
-            <span id="userBadge" class="text-[10px] uppercase font-bold px-2 py-0.5 rounded-full bg-blue-50 text-blue-600 inline-block self-end">ROLE</span>
+            <span id="userName" class="text-sm font-extrabold text-slate-800">Nama Pengguna</span>
+            <div class="flex items-center gap-1.5 justify-end mt-0.5">
+              <span id="userDivision" class="text-[9px] text-slate-500 font-bold uppercase">DIVISI</span>
+              <span id="userBadge" class="text-[9px] uppercase font-bold px-2 py-0.5 rounded-full inline-block">ROLE</span>
+            </div>
           </div>
           
-          <div class="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-slate-500 font-bold border border-slate-200">
+          <div id="userAvatar" class="w-10 h-10 rounded-xl flex items-center justify-center font-bold text-white shadow-inner">
             <span id="userInit">P</span>
           </div>
 
@@ -226,30 +220,29 @@
       </div>
     </header>
 
-    <!-- Main Workspace Layout -->
+    <!-- Konten Utama Portal -->
     <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
       
-      <!-- Tab Controls (Atas) -->
-      <div class="bg-white p-1.5 rounded-2xl shadow-sm border border-slate-100 inline-flex gap-1 w-full max-w-md">
-        <button id="tabRequestBtn" onclick="switchDashboardTab('request')" class="flex-1 py-2.5 px-4 text-xs font-bold rounded-xl transition duration-150 flex items-center justify-center gap-2 bg-blue-600 text-white shadow-md">
-          <i class="fa-solid fa-file-invoice"></i> Pengajuan
+      <!-- Kontrol Tab Navigasi Premium -->
+      <div class="bg-white p-1.5 rounded-2xl shadow-sm border border-slate-200/80 inline-flex gap-1 w-full max-w-lg">
+        <button id="tabRequestBtn" onclick="switchDashboardTab('request')" class="flex-1 py-2.5 px-4 text-xs font-bold rounded-xl transition duration-150 flex items-center justify-center gap-2">
+          <i class="fa-solid fa-file-invoice"></i> Alur Pengajuan
         </button>
-        <button id="tabProcurementBtn" onclick="switchDashboardTab('procurement')" class="flex-1 py-2.5 px-4 text-xs font-bold rounded-xl transition duration-150 flex items-center justify-center gap-2 text-slate-500 hover:bg-slate-50">
+        <button id="tabProcurementBtn" onclick="switchDashboardTab('procurement')" class="flex-1 py-2.5 px-4 text-xs font-bold rounded-xl transition duration-150 flex items-center justify-center gap-2">
           <i class="fa-solid fa-truck-ramp-box"></i> Monitoring PO
         </button>
-        <button id="tabAuditBtn" onclick="switchDashboardTab('audit')" class="flex-1 py-2.5 px-4 text-xs font-bold rounded-xl transition duration-150 flex items-center justify-center gap-2 text-slate-500 hover:bg-slate-50">
+        <button id="tabAuditBtn" onclick="switchDashboardTab('audit')" class="flex-1 py-2.5 px-4 text-xs font-bold rounded-xl transition duration-150 flex items-center justify-center gap-2">
           <i class="fa-solid fa-list-check"></i> Audit Log
         </button>
       </div>
 
-      <!-- ================= SECTION: TAB PENGAJUAN (REQUEST) ================= -->
+      <!-- ================= SECTION A: TAB ALUR PENGAJUAN (REQUEST) ================= -->
       <div id="sectionRequest" class="space-y-6">
         
-        <!-- CARD PENGAJUAN REQUESTER (FORM + RIWAYAT) -->
+        <!-- INTERFACE KHUSUS UNTUK REQUESTER (HIJAU EMERALD) -->
         <div id="requesterSection" class="grid grid-cols-1 lg:grid-cols-3 gap-6 hidden">
-          
           <!-- Kiri: Form Pengajuan Baru -->
-          <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-100 space-y-4">
+          <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-200/80 space-y-4">
             <div class="flex items-center gap-2 pb-3 border-b border-slate-100">
               <span class="p-2 bg-emerald-50 text-emerald-600 rounded-xl text-xs"><i class="fa-solid fa-paper-plane"></i></span>
               <h3 class="font-bold text-slate-800 text-sm">Formulir Pengajuan Baru</h3>
@@ -265,31 +258,31 @@
 
               <div class="grid grid-cols-2 gap-3">
                 <div>
-                  <label class="block text-[10px] font-bold text-slate-500 mb-1 uppercase tracking-wider">Jenis</label>
-                  <select id="reqJenis" class="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm bg-white">
+                  <label class="block text-[10px] font-bold text-slate-500 mb-1 uppercase tracking-wider">Jenis Pengadaan</label>
+                  <select id="reqJenis" class="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm bg-white font-medium">
                     <option value="Barang">Barang</option>
                     <option value="Jasa">Jasa</option>
                   </select>
                 </div>
                 <div>
-                  <label class="block text-[10px] font-bold text-slate-500 mb-1 uppercase tracking-wider">Kategori</label>
-                  <input type="text" id="reqKategori" required placeholder="Alat Tulis / Mesin" class="w-full px-4 py-2 border border-slate-200 rounded-xl text-sm">
+                  <label class="block text-[10px] font-bold text-slate-500 mb-1 uppercase tracking-wider">Kategori Kelompok</label>
+                  <input type="text" id="reqKategori" required placeholder="Alat Tulis / Suku Cadang" class="w-full px-4 py-2 border border-slate-200 rounded-xl text-sm bg-white">
                 </div>
               </div>
 
               <div>
-                <label class="block text-[10px] font-bold text-slate-500 mb-1 uppercase tracking-wider">Deskripsi Pekerjaan / Nama Barang</label>
-                <textarea id="reqDeskripsi" required rows="2" placeholder="Tulis rincian barang/jasa secara lengkap" class="w-full px-4 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                <label class="block text-[10px] font-bold text-slate-500 mb-1 uppercase tracking-wider">Deskripsi Spesifikasi Teknis</label>
+                <textarea id="reqDeskripsi" required rows="3" placeholder="Tulis rincian barang/jasa secara lengkap" class="w-full px-4 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white"></textarea>
               </div>
 
               <div class="grid grid-cols-2 gap-3">
                 <div>
-                  <label class="block text-[10px] font-bold text-slate-500 mb-1 uppercase tracking-wider">Jumlah (Qty)</label>
-                  <input type="number" id="reqQty" required min="1" placeholder="10" class="w-full px-4 py-2 border border-slate-200 rounded-xl text-sm">
+                  <label class="block text-[10px] font-bold text-slate-500 mb-1 uppercase tracking-wider">Jumlah Kuantitas (Qty)</label>
+                  <input type="number" id="reqQty" required min="1" placeholder="10" class="w-full px-4 py-2 border border-slate-200 rounded-xl text-sm bg-white">
                 </div>
                 <div>
-                  <label class="block text-[10px] font-bold text-slate-500 mb-1 uppercase tracking-wider">Prioritas</label>
-                  <select id="reqPrioritas" class="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm bg-white">
+                  <label class="block text-[10px] font-bold text-slate-500 mb-1 uppercase tracking-wider">Tingkat Prioritas</label>
+                  <select id="reqPrioritas" class="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm bg-white font-medium">
                     <option value="Low">Low</option>
                     <option value="Medium" selected>Medium</option>
                     <option value="High">High</option>
@@ -300,19 +293,19 @@
 
               <div>
                 <label class="block text-[10px] font-bold text-slate-500 mb-1 uppercase tracking-wider">Tanggal Kebutuhan</label>
-                <input type="date" id="reqTglButuh" required class="w-full px-4 py-2 border border-slate-200 rounded-xl text-sm">
+                <input type="date" id="reqTglButuh" required class="w-full px-4 py-2 border border-slate-200 rounded-xl text-sm bg-white">
               </div>
 
               <div>
                 <label class="block text-[10px] font-bold text-slate-500 mb-1 uppercase tracking-wider">Dokumen / Lampiran Foto</label>
-                <input type="file" id="reqFile" onchange="convertFileToBase64()" class="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer">
+                <input type="file" id="reqFile" onchange="convertFileToBase64()" class="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 cursor-pointer">
                 <input type="hidden" id="reqFileBase64" value="">
                 <input type="hidden" id="reqFileName" value="">
-                <p class="text-[10px] text-slate-400 mt-1">Sangat disarankan mengunggah gambar/foto rujukan.</p>
+                <p class="text-[10px] text-slate-400 mt-1">Gunakan format gambar JPG/PNG atau Dokumen PDF.</p>
               </div>
 
               <div class="flex gap-2 pt-2">
-                <button type="submit" id="submitFormBtn" class="flex-1 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl text-xs transition duration-150 shadow-md">
+                <button type="submit" id="submitFormBtn" class="flex-1 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs transition duration-150 shadow-md shadow-emerald-600/10 uppercase tracking-wider">
                   Kirim Pengajuan
                 </button>
                 <button type="button" id="cancelFormBtn" onclick="resetForm()" class="px-4 py-3 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold rounded-xl text-xs transition duration-150 hidden">
@@ -322,92 +315,92 @@
             </form>
           </div>
 
-          <!-- Kanan: Daftar Histori Pengajuan Anda -->
-          <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-100 lg:col-span-2 space-y-4">
+          <!-- Kanan: Daftar Histori Riwayat Pengajuan Sendiri -->
+          <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-200/80 lg:col-span-2 space-y-4">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-3 border-b border-slate-100">
               <div class="flex items-center gap-2">
-                <span class="p-2 bg-blue-50 text-blue-600 rounded-xl text-xs"><i class="fa-solid fa-list-check"></i></span>
+                <span class="p-2 bg-emerald-50 text-emerald-600 rounded-xl text-xs"><i class="fa-solid fa-list-check"></i></span>
                 <div>
-                  <h3 class="font-bold text-slate-800 text-sm">Daftar Pengajuan Saya</h3>
-                  <p class="text-[10px] text-slate-400">Pengajuan dapat diedit/dihapus jika status masih 'Pending'</p>
+                  <h3 class="font-bold text-slate-800 text-sm">Riwayat Pengajuan Logistik Saya</h3>
+                  <p class="text-[10px] text-slate-400">Pengubahan/penghapusan berkas diizinkan selama status bernilai 'Pending'</p>
                 </div>
               </div>
               <button onclick="fetchData()" class="px-3 py-1.5 bg-slate-50 text-slate-600 hover:bg-slate-100 text-xs font-semibold rounded-lg border border-slate-200 transition flex items-center gap-1.5 self-start">
-                <i class="fa-solid fa-rotate"></i> Sinkronisasi
+                <i class="fa-solid fa-rotate"></i> Perbarui Data
               </button>
             </div>
 
-            <!-- List Card Pengajuan (Mobile Responsive Friendly List) -->
-            <div id="requesterRequestList" class="space-y-4 max-h-[500px] overflow-y-auto custom-scrollbar pr-1">
-              <!-- Render Dinamis di JS -->
+            <!-- List Card Interaktif -->
+            <div id="requesterRequestList" class="space-y-4 max-h-[550px] overflow-y-auto custom-scrollbar pr-1">
+              <!-- Render Dinamis -->
             </div>
           </div>
         </div>
 
-        <!-- MONITORING DASHBOARD PENGAJUAN (UNTUK ADMIN) -->
-        <div id="adminSection" class="bg-white rounded-3xl p-6 shadow-sm border border-slate-100 space-y-6 hidden">
+        <!-- INTERFACE KHUSUS UNTUK ADMIN/PURCHASING (INDIGO/BLUE) -->
+        <div id="adminSection" class="bg-white rounded-3xl p-6 shadow-sm border border-slate-200/80 space-y-6 hidden">
           <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-3 border-b border-slate-100">
             <div class="flex items-center gap-2">
               <span class="p-2 bg-indigo-50 text-indigo-600 rounded-xl text-xs"><i class="fa-solid fa-chart-line"></i></span>
               <div>
-                <h3 class="font-bold text-slate-800 text-base">Dashboard Monitoring Pengajuan</h3>
-                <p class="text-[11px] text-slate-400">Kelola dan ubah status pengajuan dari semua departemen/requester</p>
+                <h3 class="font-bold text-slate-800 text-base">Dashboard Monitoring Pengajuan Masuk</h3>
+                <p class="text-[11px] text-slate-400">Kelola berkas pengadaan, buat rujukan PO, dan update status pengiriman logistik</p>
               </div>
             </div>
             
-            <button onclick="fetchData()" class="px-4 py-2 bg-blue-600 text-white hover:bg-blue-700 text-xs font-semibold rounded-xl transition flex items-center gap-2 self-start shadow-sm">
-              <i class="fa-solid fa-rotate-right"></i> Ambil Data Terbaru
+            <button onclick="fetchData()" class="px-4 py-2 bg-indigo-600 text-white hover:bg-indigo-700 text-xs font-semibold rounded-xl transition flex items-center gap-2 self-start shadow-md shadow-indigo-600/10">
+              <i class="fa-solid fa-rotate-right"></i> Tarik Data Real-Time
             </button>
           </div>
 
-          <!-- Total Counter Metrics -->
+          <!-- Metrik Widget Panel -->
           <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div class="p-4 bg-slate-50 border border-slate-100 rounded-2xl flex items-center gap-3">
+            <div class="p-4 bg-slate-50/50 border border-slate-100 rounded-2xl flex items-center gap-3">
               <div class="p-3 bg-blue-50 text-blue-600 rounded-xl text-lg"><i class="fa-solid fa-folder-open"></i></div>
               <div>
                 <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wide">Total Pengajuan</p>
-                <h4 id="metricTotal" class="text-lg font-black text-slate-700">0</h4>
+                <h4 id="metricTotal" class="text-lg font-black text-slate-800">0</h4>
               </div>
             </div>
-            <div class="p-4 bg-slate-50 border border-slate-100 rounded-2xl flex items-center gap-3">
+            <div class="p-4 bg-slate-50/50 border border-slate-100 rounded-2xl flex items-center gap-3">
               <div class="p-3 bg-amber-50 text-amber-600 rounded-xl text-lg"><i class="fa-solid fa-hourglass-half"></i></div>
               <div>
-                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wide">Pending</p>
-                <h4 id="metricPending" class="text-lg font-black text-slate-700">0</h4>
+                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wide">Pending PO</p>
+                <h4 id="metricPending" class="text-lg font-black text-slate-800">0</h4>
               </div>
             </div>
-            <div class="p-4 bg-slate-50 border border-slate-100 rounded-2xl flex items-center gap-3">
+            <div class="p-4 bg-slate-50/50 border border-slate-100 rounded-2xl flex items-center gap-3">
               <div class="p-3 bg-emerald-50 text-emerald-600 rounded-xl text-lg"><i class="fa-solid fa-square-check"></i></div>
               <div>
-                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wide">Disetujui</p>
-                <h4 id="metricApproved" class="text-lg font-black text-slate-700">0</h4>
+                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wide">Selesai / Terkirim</p>
+                <h4 id="metricApproved" class="text-lg font-black text-slate-800">0</h4>
               </div>
             </div>
-            <div class="p-4 bg-slate-50 border border-slate-100 rounded-2xl flex items-center gap-3">
+            <div class="p-4 bg-slate-50/50 border border-slate-100 rounded-2xl flex items-center gap-3">
               <div class="p-3 bg-rose-50 text-rose-600 rounded-xl text-lg"><i class="fa-solid fa-ban"></i></div>
               <div>
                 <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wide">Ditolak</p>
-                <h4 id="metricRejected" class="text-lg font-black text-slate-700">0</h4>
+                <h4 id="metricRejected" class="text-lg font-black text-slate-800">0</h4>
               </div>
             </div>
           </div>
 
-          <!-- Filter & Search Panel -->
+          <!-- Penyaringan (Filter & Search) -->
           <div class="flex flex-col md:flex-row gap-3 items-center bg-slate-50 p-4 rounded-2xl border border-slate-100">
             <div class="flex-1 w-full relative">
-              <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400"><i class="fa-solid fa-magnifying-glass text-xs"></i></span>
-              <input type="text" id="adminSearch" oninput="filterAdminRequests()" placeholder="Cari berdasarkan No Request, Pemohon atau Deskripsi..." class="w-full pl-9 pr-4 py-2 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white">
+              <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400"><i class="fa-solid fa-magnifying-glass text-xs"></i></span>
+              <input type="text" id="adminSearch" oninput="filterAdminRequests()" placeholder="Cari berdasarkan No Request, Pemohon atau Deskripsi..." class="w-full pl-9 pr-4 py-2 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-indigo-500 bg-white">
             </div>
             <div class="flex gap-2 w-full md:w-auto">
-              <select id="adminFilterStatus" onchange="filterAdminRequests()" class="flex-1 md:w-40 px-3 py-2 border border-slate-200 rounded-xl text-xs bg-white">
+              <select id="adminFilterStatus" onchange="filterAdminRequests()" class="flex-1 md:w-40 px-3 py-2 border border-slate-200 rounded-xl text-xs bg-white font-medium">
                 <option value="">Semua Status</option>
                 <option value="Pending">Pending</option>
                 <option value="Approved">Approved</option>
-                <option value="Ditolak">Ditolak</option>
                 <option value="On Progress">On Progress</option>
                 <option value="Selesai">Selesai</option>
+                <option value="Ditolak">Ditolak</option>
               </select>
-              <select id="adminFilterDivisi" onchange="filterAdminRequests()" class="flex-1 md:w-40 px-3 py-2 border border-slate-200 rounded-xl text-xs bg-white">
+              <select id="adminFilterDivisi" onchange="filterAdminRequests()" class="flex-1 md:w-40 px-3 py-2 border border-slate-200 rounded-xl text-xs bg-white font-medium">
                 <option value="">Semua Divisi</option>
                 <option value="Logistik">Logistik</option>
                 <option value="Plant">Plant</option>
@@ -421,21 +414,21 @@
             </div>
           </div>
 
-          <!-- Tabel List Request untuk Admin -->
+          <!-- Tabel Ringkasan Request Admin -->
           <div class="overflow-x-auto border border-slate-100 rounded-2xl custom-scrollbar">
             <table class="w-full text-left border-collapse text-xs">
               <thead>
                 <tr class="bg-slate-50 border-b border-slate-100 text-slate-500 font-bold uppercase">
                   <th class="p-4">No Request</th>
                   <th class="p-4">Tanggal / Pemohon</th>
-                  <th class="p-4">Detail Kebutuhan</th>
+                  <th class="p-4">Deskripsi Pengadaan</th>
                   <th class="p-4">Prioritas</th>
                   <th class="p-4">Status</th>
-                  <th class="p-4 text-center">Aksi</th>
+                  <th class="p-4 text-center">Tindakan</th>
                 </tr>
               </thead>
               <tbody id="adminRequestTableBody" class="divide-y divide-slate-100">
-                <!-- Render Dinamis di JS -->
+                <!-- Render Dinamis -->
               </tbody>
             </table>
           </div>
@@ -443,67 +436,67 @@
 
       </div>
 
-      <!-- ================= SECTION: TAB MONITORING PENGADAAN (PROCUREMENT / STATUS) ================= -->
+      <!-- ================= SECTION B: TAB MONITORING PENGADAAN (PROCUREMENT REKAP) ================= -->
       <div id="sectionProcurement" class="space-y-6 hidden">
-        <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-100 space-y-4">
+        <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-200/80 space-y-4">
           <div class="flex items-center justify-between pb-3 border-b border-slate-100">
             <div class="flex items-center gap-2">
               <span class="p-2 bg-blue-50 text-blue-600 rounded-xl text-xs"><i class="fa-solid fa-truck-ramp-box"></i></span>
               <div>
                 <h3 class="font-bold text-slate-800 text-base">Dashboard Monitoring Pengadaan</h3>
-                <p class="text-[11px] text-slate-400">Rincian estimasi budget, penunjukan vendor, serta tracking status pengiriman barang/jasa</p>
+                <p class="text-[11px] text-slate-400">Rincian estimasi anggaran, penunjukan nama vendor, dan kepastian tanggal kedatangan barang/jasa</p>
               </div>
             </div>
           </div>
 
-          <!-- Procurement Table / List -->
-          <div class="overflow-x-auto border border-slate-100 rounded-2xl custom-scrollbar">
+          <!-- Tabel Pelacakan Pengadaan (Dilihat oleh kedua role) -->
+          <div class="overflow-x-auto border border-slate-200/60 rounded-2xl custom-scrollbar">
             <table class="w-full text-left border-collapse text-xs">
               <thead>
-                <tr class="bg-slate-50 border-b border-slate-100 text-slate-500 font-bold uppercase">
+                <tr class="bg-slate-50 border-b border-slate-200 text-slate-500 font-bold uppercase">
                   <th class="p-4">No Request</th>
-                  <th class="p-4">Detail Barang/Jasa</th>
+                  <th class="p-4">Detail Kebutuhan</th>
                   <th class="p-4">Vendor Pelaksana</th>
                   <th class="p-4 text-right">Estimasi Budget</th>
                   <th class="p-4 text-right">Total Anggaran</th>
-                  <th class="p-4">Estimasi Datang</th>
-                  <th class="p-4">Progress Status</th>
+                  <th class="p-4">Estimasi Kedatangan</th>
+                  <th class="p-4">Status Progress</th>
                 </tr>
               </thead>
               <tbody id="procurementTableBody" class="divide-y divide-slate-100">
-                <!-- Render Dinamis di JS -->
+                <!-- Render Dinamis -->
               </tbody>
             </table>
           </div>
         </div>
       </div>
 
-      <!-- ================= SECTION: TAB AUDIT LOG ================= -->
+      <!-- ================= SECTION C: TAB AUDIT LOG ================= -->
       <div id="sectionAudit" class="space-y-6 hidden">
-        <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-100 space-y-4">
+        <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-200/80 space-y-4">
           <div class="flex items-center justify-between pb-3 border-b border-slate-100">
             <div class="flex items-center gap-2">
               <span class="p-2 bg-slate-100 text-slate-600 rounded-xl text-xs"><i class="fa-solid fa-list-check"></i></span>
               <div>
                 <h3 class="font-bold text-slate-800 text-base">Sistem Audit Log Real-time</h3>
-                <p class="text-[11px] text-slate-400">Melacak seluruh perubahan, aktivitas masuk, pengajuan baru, dan perubahan status oleh admin</p>
+                <p class="text-[11px] text-slate-400">Rekaman jejak aktivitas sistem pengadaan, otentikasi user, serta pelacakan update status</p>
               </div>
             </div>
           </div>
 
-          <div class="overflow-x-auto border border-slate-100 rounded-2xl custom-scrollbar">
+          <div class="overflow-x-auto border border-slate-200/60 rounded-2xl custom-scrollbar">
             <table class="w-full text-left border-collapse text-xs">
               <thead>
-                <tr class="bg-slate-50 border-b border-slate-100 text-slate-500 font-bold uppercase">
+                <tr class="bg-slate-50 border-b border-slate-200/60 text-slate-500 font-bold uppercase">
                   <th class="p-4">No Audit</th>
-                  <th class="p-4">Waktu</th>
+                  <th class="p-4">Tanggal & Waktu</th>
                   <th class="p-4">Pengguna</th>
                   <th class="p-4">Aksi</th>
-                  <th class="p-4">Keterangan</th>
+                  <th class="p-4">Keterangan Teknis</th>
                 </tr>
               </thead>
               <tbody id="auditLogTableBody" class="divide-y divide-slate-100">
-                <!-- Render Dinamis di JS -->
+                <!-- Render Dinamis -->
               </tbody>
             </table>
           </div>
@@ -513,15 +506,15 @@
     </main>
   </section>
 
-  <!-- ================= MODAL DETIL / UPDATE DATA PENGADAAN (ADMIN ONLY) ================= -->
+  <!-- ================= MODAL ADMIN: PROSES PO & ESTIMASI BUDGET ================= -->
   <div id="adminEditModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
     <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-slate-100 space-y-4 max-h-[90vh] overflow-y-auto custom-scrollbar">
       <div class="flex items-center justify-between pb-3 border-b border-slate-100">
         <div class="flex items-center gap-2">
-          <span class="p-2 bg-blue-50 text-blue-600 rounded-xl text-xs"><i class="fa-solid fa-file-pen"></i></span>
+          <span class="p-2 bg-indigo-50 text-indigo-600 rounded-xl text-xs"><i class="fa-solid fa-file-pen"></i></span>
           <div>
             <h3 class="font-bold text-slate-800 text-sm">Pembaruan Berkas & Status Pengadaan</h3>
-            <p id="modalNoRequest" class="text-[10px] text-blue-600 font-bold mt-0.5">REQ-XXX</p>
+            <p id="modalNoRequest" class="text-[10px] text-indigo-600 font-bold mt-0.5">REQ-XXX</p>
           </div>
         </div>
         <button onclick="closeAdminModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
@@ -531,108 +524,91 @@
         <input type="hidden" id="modalInputNoRequest">
         
         <div>
-          <label class="block text-[10px] font-bold text-slate-500 mb-1 uppercase tracking-wide">Status Pengajuan</label>
-          <select id="modalStatus" class="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm bg-white">
+          <label class="block text-[10px] font-bold text-slate-500 mb-1.5 uppercase tracking-wide">Status Alur Pengadaan</label>
+          <select id="modalStatus" class="w-full px-3 py-2.5 border border-slate-200 rounded-xl text-sm bg-white font-medium">
             <option value="Pending">Pending (Menunggu Persetujuan)</option>
-            <option value="Approved">Approved (Disetujui)</option>
-            <option value="On Progress">On Progress (Pemesanan Vendor/PO)</option>
-            <option value="Selesai">Selesai (Barang Datang / Terpasang)</option>
-            <option value="Ditolak">Ditolak (Permintaan Tidak Valid)</option>
+            <option value="Approved">Approved (Disetujui / Mulai Pengadaan)</option>
+            <option value="On Progress">On Progress (Proses Pemesanan PO)</option>
+            <option value="Selesai">Selesai (Barang Datang / Selesai Serah Terima)</option>
+            <option value="Ditolak">Ditolak (Permintaan Tidak Sesuai Kriteria)</option>
           </select>
         </div>
 
         <div>
-          <label class="block text-[10px] font-bold text-slate-500 mb-1 uppercase tracking-wide">Detail Pengadaan / Catatan Teknis</label>
-          <textarea id="modalDetailPengajuan" required rows="3" class="w-full px-4 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Catatan detail barang, spek, atau justifikasi status"></textarea>
+          <label class="block text-[10px] font-bold text-slate-500 mb-1.5 uppercase tracking-wide">Detail Pengadaan / Keterangan Teknis</label>
+          <textarea id="modalDetailPengajuan" required rows="3" class="w-full px-4 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white" placeholder="Catatan spesifikasi detail barang, no surat penawaran, dll"></textarea>
         </div>
 
         <div class="grid grid-cols-2 gap-3">
           <div>
-            <label class="block text-[10px] font-bold text-slate-500 mb-1 uppercase tracking-wide">Estimasi Budget (Rp)</label>
-            <input type="number" id="modalEstimasiBudget" required class="w-full px-4 py-2 border border-slate-200 rounded-xl text-sm">
+            <label class="block text-[10px] font-bold text-slate-500 mb-1.5 uppercase tracking-wide">Estimasi Anggaran (Rp)</label>
+            <input type="number" id="modalEstimasiBudget" required class="w-full px-4 py-2 border border-slate-200 rounded-xl text-sm bg-white">
           </div>
           <div>
-            <label class="block text-[10px] font-bold text-slate-500 mb-1 uppercase tracking-wide">Total Anggaran Riil (Rp)</label>
-            <input type="number" id="modalTotalAnggaran" required class="w-full px-4 py-2 border border-slate-200 rounded-xl text-sm">
+            <label class="block text-[10px] font-bold text-slate-500 mb-1.5 uppercase tracking-wide">Total Anggaran Riil (Rp)</label>
+            <input type="number" id="modalTotalAnggaran" required class="w-full px-4 py-2 border border-slate-200 rounded-xl text-sm bg-white">
           </div>
         </div>
 
         <div class="grid grid-cols-2 gap-3">
           <div>
-            <label class="block text-[10px] font-bold text-slate-500 mb-1 uppercase tracking-wide">Vendor / PO Refference</label>
-            <input type="text" id="modalVendor" placeholder="e.g. PT. Sumber Abadi" required class="w-full px-4 py-2 border border-slate-200 rounded-xl text-sm">
+            <label class="block text-[10px] font-bold text-slate-500 mb-1.5 uppercase tracking-wide">Vendor Pelaksana / Nomor PO</label>
+            <input type="text" id="modalVendor" placeholder="e.g. PT. Global Logistik" required class="w-full px-4 py-2 border border-slate-200 rounded-xl text-sm bg-white">
           </div>
           <div>
-            <label class="block text-[10px] font-bold text-slate-500 mb-1 uppercase tracking-wide">Estimasi Kedatangan</label>
-            <input type="text" id="modalEstimasiKedatangan" placeholder="e.g. 10 Juni 2026" required class="w-full px-4 py-2 border border-slate-200 rounded-xl text-sm">
+            <label class="block text-[10px] font-bold text-slate-500 mb-1.5 uppercase tracking-wide">Estimasi Tanggal Datang</label>
+            <input type="text" id="modalEstimasiKedatangan" placeholder="e.g. 15 Juni 2026" required class="w-full px-4 py-2 border border-slate-200 rounded-xl text-sm bg-white">
           </div>
         </div>
 
-        <button type="submit" class="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl text-xs transition duration-150 shadow-md">
-          Simpan Pembaruan Database
+        <button type="submit" class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-xs transition duration-150 shadow-md uppercase tracking-wider">
+          Simpan Pembaruan Database <i class="fa-solid fa-floppy-disk ml-1"></i>
         </button>
       </form>
     </div>
   </div>
 
-  <!-- Footnote -->
-  <footer class="bg-white border-t border-slate-100 py-4 text-center mt-auto">
-    <p class="text-[11px] text-slate-400">Sistem Logistik Internal PO FAD-LMO &bull; Diaktifkan dengan Google Sheets API.</p>
+  <!-- Footer -->
+  <footer class="bg-white border-t border-slate-200/60 py-4 text-center mt-auto">
+    <p class="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">Sistem Logistik Internal PO FAD-LMO &bull; Terhubung Google Sheets API</p>
   </footer>
 
-  <!-- ================= LOGIC & INTEGRATION SCRIPT ================= -->
+  <!-- ================= LOGIC & REAL WEB INTEGRATION ================= -->
   <script>
-    // Global State
+    // =========================================================================
+    // TEMPELKAN URL DEPLOY APPS SCRIPT ANDA DI SINI
+    // =========================================================================
+    const SCRIPT_API_URL = "https://script.google.com/macros/s/AKfycbwUnEFFK94M0h6NNYuayqEtkUxgvqh_bvuvK1MA9cWu345nFe0yJ4ae57UnNQebebI4/exec";
+    // =========================================================================
+
+    // State Global
     let currentUser = null;
-    let spreadsheetApiUrl = "";
     let allRequestsCache = [];
-    
-    // Inisialisasi awal pada saat window load
+    let activeTab = 'request';
+
+    // Inisialisasi Aplikasi Saat Memuat Halaman
     window.addEventListener("load", () => {
-      // Periksa konfigurasi API URL yang disimpan di localStorage
-      const savedUrl = localStorage.getItem("po_fad_lmo_api_url");
-      if (savedUrl) {
-        spreadsheetApiUrl = savedUrl;
-        document.getElementById("apiUrlInput").value = savedUrl;
-        document.getElementById("configModal").classList.add("hidden");
+      // Validasi Konfigurasi URL API
+      if (!SCRIPT_API_URL || SCRIPT_API_URL.includes("URL_DISINI")) {
+        showToast("Kesalahan Konfigurasi", "Anda belum memasukkan URL Google Apps Script pada kode program.", "error");
       }
-      
-      // Ambil data user login tersimpan jika ada (stay login)
+
+      // Pertahankan status login jika sesi tersimpan
       const savedUser = localStorage.getItem("po_fad_lmo_user");
       if (savedUser) {
         currentUser = JSON.parse(savedUser);
         setupDashboardUI();
       } else {
-        // Tunjukkan form login awal
         document.getElementById("authPage").classList.remove("hidden");
         document.getElementById("appDashboard").classList.add("hidden");
       }
-      
-      // Mengisi default tanggal form pengajuan ke hari ini
+
+      // Default Tanggal Form Pengajuan
       const today = new Date().toISOString().split('T')[0];
       document.getElementById("reqTanggal").value = today;
     });
 
-    // --- INTEGRASI CONFIG ---
-    function saveConfig() {
-      const url = document.getElementById("apiUrlInput").value.trim();
-      if (!url.startsWith("https://script.google.com/")) {
-        showToast("Error Koneksi", "URL API Google Apps Script tidak valid. Silakan periksa kembali.", "error");
-        return;
-      }
-      
-      localStorage.setItem("po_fad_lmo_api_url", url);
-      spreadsheetApiUrl = url;
-      document.getElementById("configModal").classList.add("hidden");
-      showToast("Berhasil Terhubung", "Koneksi Google Sheets Database berhasil diatur!", "success");
-      
-      // Muat data jika user sudah masuk
-      if (currentUser) {
-        fetchData();
-      }
-    }
-
-    // --- ALUR TOAST (Bukan Alert Browser) ---
+    // --- SIKLUS PEMBERITAHUAN TOAST (BUKAN ALERT BROWSER) ---
     function showToast(title, message, type = "info") {
       const toast = document.getElementById("toast");
       const icon = document.getElementById("toastIcon");
@@ -642,9 +618,8 @@
       titleEl.innerText = title;
       msgEl.innerText = message;
       
-      // Styling Tipe
-      toast.classList.remove("hidden", "bg-emerald-50", "border-emerald-200", "bg-rose-50", "border-rose-200", "bg-blue-50", "border-blue-200");
-      icon.classList.remove("bg-emerald-600", "bg-rose-600", "bg-blue-600");
+      toast.classList.remove("hidden", "bg-emerald-50", "border-emerald-200", "bg-rose-50", "border-rose-200", "bg-indigo-50", "border-indigo-200", "bg-blue-50", "border-blue-200");
+      icon.classList.remove("bg-emerald-600", "bg-rose-600", "bg-indigo-600", "bg-blue-600");
       
       if (type === "success") {
         toast.classList.add("bg-emerald-50", "border-emerald-200");
@@ -654,6 +629,10 @@
         toast.classList.add("bg-rose-50", "border-rose-200");
         icon.classList.add("bg-rose-600");
         icon.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i>';
+      } else if (type === "indigo") {
+        toast.classList.add("bg-indigo-50", "border-indigo-200");
+        icon.classList.add("bg-indigo-600");
+        icon.innerHTML = '<i class="fa-solid fa-circle-info"></i>';
       } else {
         toast.classList.add("bg-blue-50", "border-blue-200");
         icon.classList.add("bg-blue-600");
@@ -663,7 +642,6 @@
       toast.classList.remove("translate-y-[-150%]");
       toast.classList.add("translate-y-0");
       
-      // Auto Hide setelah 5 detik
       setTimeout(hideToast, 5000);
     }
 
@@ -672,7 +650,7 @@
       toast.classList.add("translate-y-[-150%]");
     }
 
-    // --- ALUR LOADERS ---
+    // --- LOADING SYSTEM ---
     function showLoader(text) {
       document.getElementById("loaderText").innerText = text;
       document.getElementById("loaderModal").classList.remove("hidden");
@@ -682,7 +660,7 @@
       document.getElementById("loaderModal").classList.add("hidden");
     }
 
-    // --- SWAP AUTH FORMS ---
+    // --- TOGGLE AUTH FORMS ---
     function toggleAuthForms(showLogin) {
       if (showLogin) {
         document.getElementById("loginFormContainer").classList.remove("hidden");
@@ -692,8 +670,8 @@
         document.getElementById("registerFormContainer").classList.remove("hidden");
       }
     }
-    
-    // Sembunyikan divisi jika mendaftar sebagai Admin (Purchasing)
+
+    // Penanganan perubahan elemen input select form register
     function handleRoleChange() {
       const role = document.getElementById("regRole").value;
       const divSelect = document.getElementById("regDivisi");
@@ -705,14 +683,9 @@
       }
     }
 
-    // --- KIRIM PENDAFTARAN USER (SIGN UP) ---
+    // --- DAFTAR USER BARU (SIGN UP) ---
     async function handleRegisterSubmit(e) {
       e.preventDefault();
-      
-      if (!spreadsheetApiUrl) {
-        document.getElementById("configModal").classList.remove("hidden");
-        return;
-      }
       
       const payload = {
         action: "signup",
@@ -721,126 +694,132 @@
           email: document.getElementById("regEmail").value.trim(),
           password: document.getElementById("regPassword").value,
           role: document.getElementById("regRole").value,
-          divisi: document.getElementById("regDivisi").value
+          divisi: document.getElementById("regRole").value === "Admin" ? "Logistik" : document.getElementById("regDivisi").value
         }
       };
       
-      showLoader("Mendaftarkan akun baru...");
+      showLoader("Mendaftarkan akun baru ke sistem...");
       
       try {
-        const response = await fetch(spreadsheetApiUrl, {
+        const response = await fetch(SCRIPT_API_URL, {
           method: "POST",
-          mode: "no-cors", // Kita bypass cors di Apps Script
-          headers: { "Content-Type": "application/json" },
+          headers: { "Content-Type": "text/plain" },
           body: JSON.stringify(payload)
         });
         
-        // Catatan: Mode no-cors mengembalikan tipe opaque, jadi untuk kenyamanan user kita asumsikan sukses 
-        // dan pandu user kembali ke halaman login.
+        const res = await response.json();
         hideLoader();
-        showToast("Registrasi Terkirim", "Silakan coba login menggunakan detail kredensial Anda.", "success");
-        document.getElementById("registerForm").reset();
-        toggleAuthForms(true);
+        
+        if (res.success) {
+          showToast("Registrasi Berhasil", res.message, "success");
+          document.getElementById("registerForm").reset();
+          toggleAuthForms(true);
+        } else {
+          showToast("Registrasi Gagal", res.message, "error");
+        }
         
       } catch (err) {
         hideLoader();
-        showToast("Koneksi Gagal", "Gagal menghubungi database server.", "error");
+        showToast("Error Koneksi", "Gagal menghubungi database server pengadaan.", "error");
       }
     }
 
-    // --- PROSES SIGN IN (REAL SPREADSHEET VALIDATION) ---
+    // --- LOGIN PORTAL (SIGN IN) ---
     async function handleLoginSubmit(e) {
       e.preventDefault();
-      
-      if (!spreadsheetApiUrl) {
-        document.getElementById("configModal").classList.remove("hidden");
-        return;
-      }
       
       const email = document.getElementById("loginEmail").value.trim();
       const password = document.getElementById("loginPassword").value;
       
-      showLoader("Mengecek otentikasi akun...");
+      showLoader("Memvalidasi identitas akun...");
       
       try {
-        // Kita gunakan fetch dengan no-cors untuk keamanan pengiriman data
-        // Agar bisa membaca respons sukses, di script web app disarankan menyertakan CORS handler,
-        // namun karena no-cors tidak membaca body, kita lakukan post biasa.
-        // Solusi andalan: Kita fetch menggunakan JSONP atau request standard
-        const resp = await fetch(`${spreadsheetApiUrl}?cb=${Date.now()}`); // uji konektivitas
-        
-        // Panggilan real POST
-        const rawResponse = await fetch(spreadsheetApiUrl, {
+        const response = await fetch(SCRIPT_API_URL, {
           method: "POST",
-          headers: { "Content-Type": "text/plain" }, // Gunakan text/plain untuk melewati CORS preflight standar
+          headers: { "Content-Type": "text/plain" },
           body: JSON.stringify({
             action: "signin",
             data: { email: email, password: password }
           })
         });
         
-        const res = await rawResponse.json();
+        const res = await response.json();
         hideLoader();
         
         if (res.success) {
           currentUser = res.user;
           localStorage.setItem("po_fad_lmo_user", JSON.stringify(currentUser));
-          showToast("Berhasil Masuk", "Selamat datang kembali, " + currentUser.nama_lengkap, "success");
+          showToast("Login Sukses", "Selamat datang di Portal, " + currentUser.nama_lengkap, "success");
           setupDashboardUI();
         } else {
-          showToast("Gagal Masuk", res.message, "error");
+          showToast("Otentikasi Gagal", res.message, "error");
         }
         
       } catch (err) {
         hideLoader();
-        // Fallback offline dummy jika API belum di set oleh user agar interface tetap interaktif
-        showToast("Kesalahan Koneksi", "Gagal otentikasi. Pastikan Apps Script URL sudah dideploy dan diatur dengan benar.", "error");
-        document.getElementById("configModal").classList.remove("hidden");
+        showToast("Error Koneksi", "Koneksi database terputus atau URL API Apps Script salah.", "error");
       }
     }
 
-    // --- SIGN OUT ---
+    // --- KELUAR SISTEM (LOGOUT) ---
     function handleLogout() {
       localStorage.removeItem("po_fad_lmo_user");
       currentUser = null;
       document.getElementById("authPage").classList.remove("hidden");
       document.getElementById("appDashboard").classList.add("hidden");
-      showToast("Sesi Berakhir", "Anda telah keluar dari sistem secara aman.", "info");
+      showToast("Sesi Berakhir", "Anda berhasil keluar dari portal pengadaan.", "indigo");
     }
 
-    // --- SETUP DASHBOARD INTERFACE ---
+    // --- SETUP DASHBOARD BERDASARKAN ROLE (BEDAKAN INTERFACE) ---
     function setupDashboardUI() {
       if (!currentUser) return;
       
       document.getElementById("authPage").classList.add("hidden");
       document.getElementById("appDashboard").classList.remove("hidden");
       
-      // Update Profil Header
+      // Mengatur Profil Identitas Pengguna
       document.getElementById("userName").innerText = currentUser.nama_lengkap;
+      document.getElementById("userDivision").innerText = currentUser.divisi;
       document.getElementById("userBadge").innerText = currentUser.role;
       document.getElementById("userInit").innerText = currentUser.nama_lengkap.charAt(0).toUpperCase();
-      
-      // Bedakan Tampilan Berdasarkan Hak Akses
+
+      // Deklarasi Visual Interface Per-Role
+      const appNavbar = document.getElementById("appNavbar");
+      const navLogoContainer = document.getElementById("navLogoContainer");
+      const userAvatar = document.getElementById("userAvatar");
+      const userBadge = document.getElementById("userBadge");
       const requesterSec = document.getElementById("requesterSection");
       const adminSec = document.getElementById("adminSection");
       
       if (currentUser.role === "Admin") {
+        // Tema Warna Admin: Indigo/Blue
+        appNavbar.className = "border-b transition-colors duration-300 bg-white border-indigo-100 shadow-sm sticky top-0 z-40";
+        navLogoContainer.className = "p-2.5 rounded-xl text-white transition-colors duration-300 bg-indigo-600";
+        userAvatar.className = "w-10 h-10 rounded-xl flex items-center justify-center font-bold text-white shadow-inner bg-indigo-600";
+        userBadge.className = "text-[9px] uppercase font-bold px-2 py-0.5 rounded-full inline-block bg-indigo-50 text-indigo-700";
+
+        // Pengaturan Halaman
         requesterSec.classList.add("hidden");
         adminSec.classList.remove("hidden");
       } else {
+        // Tema Warna Requester: Emerald Green
+        appNavbar.className = "border-b transition-colors duration-300 bg-white border-emerald-100 shadow-sm sticky top-0 z-40";
+        navLogoContainer.className = "p-2.5 rounded-xl text-white transition-colors duration-300 bg-emerald-600";
+        userAvatar.className = "w-10 h-10 rounded-xl flex items-center justify-center font-bold text-white shadow-inner bg-emerald-600";
+        userBadge.className = "text-[9px] uppercase font-bold px-2 py-0.5 rounded-full inline-block bg-emerald-50 text-emerald-700";
+
+        // Pengaturan Halaman
         requesterSec.classList.remove("hidden");
         adminSec.classList.add("hidden");
       }
       
-      // Atur tab aktif default ke Request
       switchDashboardTab('request');
-      
-      // Ambil data dari database spreadsheet
       fetchData();
     }
 
-    // --- SWAP MENU UTAMA (TAB SYSTEM) ---
+    // --- SWAP TAB UTAMA ---
     function switchDashboardTab(tabId) {
+      activeTab = tabId;
       const secReq = document.getElementById("sectionRequest");
       const secProc = document.getElementById("sectionProcurement");
       const secAudit = document.getElementById("sectionAudit");
@@ -849,31 +828,33 @@
       const tabProcBtn = document.getElementById("tabProcurementBtn");
       const tabAuditBtn = document.getElementById("tabAuditBtn");
       
-      // Reset Class button
+      // Reset Default Class Button
       [tabReqBtn, tabProcBtn, tabAuditBtn].forEach(btn => {
-        btn.className = "flex-1 py-2.5 px-4 text-xs font-bold rounded-xl transition duration-150 flex items-center justify-center gap-2 text-slate-500 hover:bg-slate-50";
+        btn.className = "flex-1 py-2.5 px-4 text-xs font-bold rounded-xl transition duration-150 flex items-center justify-center gap-2 text-slate-500 hover:bg-slate-100";
       });
       
-      // Hide sections
+      // Sembunyikan Semua Section
       secReq.classList.add("hidden");
       secProc.classList.add("hidden");
       secAudit.classList.add("hidden");
       
-      // Activate Tab
+      // Pilih Tema Warna Aktif Tab Sesuai Role
+      const activeColorClass = currentUser.role === "Admin" ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/10" : "bg-emerald-600 text-white shadow-md shadow-emerald-600/10";
+      
       if (tabId === "request") {
         secReq.classList.remove("hidden");
-        tabReqBtn.className = "flex-1 py-2.5 px-4 text-xs font-bold rounded-xl transition duration-150 flex items-center justify-center gap-2 bg-blue-600 text-white shadow-md";
+        tabReqBtn.className = `flex-1 py-2.5 px-4 text-xs font-bold rounded-xl transition duration-150 flex items-center justify-center gap-2 ${activeColorClass}`;
       } else if (tabId === "procurement") {
         secProc.classList.remove("hidden");
-        tabProcBtn.className = "flex-1 py-2.5 px-4 text-xs font-bold rounded-xl transition duration-150 flex items-center justify-center gap-2 bg-blue-600 text-white shadow-md";
+        tabProcBtn.className = `flex-1 py-2.5 px-4 text-xs font-bold rounded-xl transition duration-150 flex items-center justify-center gap-2 ${activeColorClass}`;
       } else if (tabId === "audit") {
         secAudit.classList.remove("hidden");
-        tabAuditBtn.className = "flex-1 py-2.5 px-4 text-xs font-bold rounded-xl transition duration-150 flex items-center justify-center gap-2 bg-blue-600 text-white shadow-md";
+        tabAuditBtn.className = `flex-1 py-2.5 px-4 text-xs font-bold rounded-xl transition duration-150 flex items-center justify-center gap-2 ${activeColorClass}`;
         fetchAuditLogs();
       }
     }
 
-    // --- PROSES FILE ATTACHMENT KE BASE64 (DOKUMEN/FOTO) ---
+    // --- PROSES FILE ATTACHMENT KE BASE64 ---
     function convertFileToBase64() {
       const fileInput = document.getElementById("reqFile");
       const file = fileInput.files[0];
@@ -887,7 +868,7 @@
       reader.readAsDataURL(file);
     }
 
-    // --- PROSES SUBMIT PENGAJUAN (ADD / EDIT) ---
+    // --- SUBMIT PENGAJUAN BARU ATAU UPDATE ---
     async function handleRequestSubmit(e) {
       e.preventDefault();
       
@@ -911,10 +892,10 @@
         }
       };
       
-      showLoader(isEditMode ? "Memperbarui pengajuan..." : "Mengirimkan formulir pengajuan baru...");
+      showLoader(isEditMode ? "Menyimpan pembaruan pengajuan..." : "Mengirim pengajuan logistik baru...");
       
       try {
-        const rawResponse = await fetch(spreadsheetApiUrl, {
+        const rawResponse = await fetch(SCRIPT_API_URL, {
           method: "POST",
           headers: { "Content-Type": "text/plain" },
           body: JSON.stringify(payload)
@@ -928,40 +909,40 @@
           resetForm();
           fetchData();
         } else {
-          showToast("Gagal Memproses", res.message, "error");
+          showToast("Proses Gagal", res.message, "error");
         }
-        
       } catch (err) {
         hideLoader();
-        showToast("Error", "Gagal terhubung dengan server pengadaan.", "error");
+        showToast("Error", "Gagal mengirim data pengajuan ke spreadsheet.", "error");
       }
     }
 
-    // Reset Form Pengajuan
     function resetForm() {
       document.getElementById("formSubmission").reset();
       document.getElementById("editNoRequest").value = "";
       document.getElementById("reqFileBase64").value = "";
       document.getElementById("reqFileName").value = "";
       
-      // Kembalikan tombol ke sedia kala
-      document.getElementById("submitFormBtn").innerText = "Kirim Pengajuan";
+      const submitBtn = document.getElementById("submitFormBtn");
+      submitBtn.innerText = "Kirim Pengajuan";
+      submitBtn.className = "flex-1 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs transition duration-150 shadow-md uppercase tracking-wider";
+      
       document.getElementById("cancelFormBtn").classList.add("hidden");
     }
 
-    // --- AMBIL DATA SELURUH PENGAJUAN DARI SHEET ---
+    // --- AMBIL DATA REQUEST DARI SPREADSHEET ---
     async function fetchData() {
-      if (!spreadsheetApiUrl || !currentUser) return;
+      if (!SCRIPT_API_URL || !currentUser) return;
       
-      showLoader("Sinkronisasi database...");
+      showLoader("Sinkronisasi database spreadsheet...");
       
       try {
-        const rawResponse = await fetch(spreadsheetApiUrl, {
+        const rawResponse = await fetch(SCRIPT_API_URL, {
           method: "POST",
           headers: { "Content-Type": "text/plain" },
           body: JSON.stringify({
             action: "getRequests",
-            email: currentUser.nama_lengkap, // untuk filter request saya
+            email: currentUser.nama_lengkap, // Pemfilteran berbasis user di Apps Script
             role: currentUser.role
           })
         });
@@ -973,18 +954,17 @@
           allRequestsCache = res.data;
           renderData();
         } else {
-          showToast("Sinkronisasi Gagal", "Gagal memproses penarikan data.", "error");
+          showToast("Sinkronisasi Gagal", "Gagal memproses penarikan data dari server.", "error");
         }
-        
       } catch (err) {
         hideLoader();
-        showToast("Error Koneksi", "Gagal sinkron database. Cek kesiapan Web App URL Anda.", "error");
+        showToast("Error", "Gagal sinkronisasi data dari Google Sheets. Cek status Web App.", "error");
       }
     }
 
-    // --- DETIL RENDERING DATA KE TABEL ---
+    // --- RENDER DATA TERPADU ---
     function renderData() {
-      // 1. RENDER UNTUK USER REQUESTER
+      // 1. RENDER UNTUK REQUESTER
       if (currentUser.role === "Requester") {
         const reqListEl = document.getElementById("requesterRequestList");
         reqListEl.innerHTML = "";
@@ -992,21 +972,19 @@
         if (allRequestsCache.length === 0) {
           reqListEl.innerHTML = `
             <div class="p-8 text-center bg-slate-50 rounded-2xl border-2 border-dashed border-slate-200">
-              <p class="text-slate-400 text-xs">Belum ada riwayat pengajuan barang/jasa dari Anda.</p>
+              <p class="text-slate-400 text-xs font-semibold">Belum ada riwayat pengajuan logistik dari divisi Anda.</p>
             </div>
           `;
         } else {
           allRequestsCache.forEach(item => {
             const hasAttachment = item.lampiran && item.lampiran !== "-";
-            const attachmentLink = hasAttachment ? `<a href="${item.lampiran}" target="_blank" class="text-blue-600 hover:underline font-semibold flex items-center gap-1"><i class="fa-solid fa-paperclip"></i> Lihat Lampiran</a>` : "<span class='text-slate-400'>Tanpa Berkas</span>";
+            const attachmentLink = hasAttachment ? `<a href="${item.lampiran}" target="_blank" class="text-emerald-600 hover:underline font-bold flex items-center gap-1"><i class="fa-solid fa-paperclip"></i> Lihat Lampiran</a>` : "<span class='text-slate-400 font-medium'>Tanpa Berkas</span>";
             
-            // badge prioritas
             let prioBadge = "bg-slate-100 text-slate-700";
             if (item.prioritas === "Urgent") prioBadge = "bg-rose-100 text-rose-700";
             else if (item.prioritas === "High") prioBadge = "bg-amber-100 text-amber-700";
             else if (item.prioritas === "Medium") prioBadge = "bg-blue-100 text-blue-700";
 
-            // badge status
             let statusBadge = "bg-slate-100 text-slate-600";
             if (item.status === "Pending") statusBadge = "bg-amber-100 text-amber-700";
             else if (item.status === "Approved") statusBadge = "bg-emerald-100 text-emerald-700";
@@ -1014,7 +992,6 @@
             else if (item.status === "Selesai") statusBadge = "bg-blue-100 text-blue-700";
             else if (item.status === "Ditolak") statusBadge = "bg-rose-100 text-rose-700";
 
-            // Tombol edit/delete hanya jika status 'Pending'
             const canEdit = item.status === "Pending";
             const actionButtons = canEdit ? `
               <div class="flex gap-2 mt-3 pt-3 border-t border-slate-100">
@@ -1026,7 +1003,7 @@
             reqListEl.innerHTML += `
               <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm space-y-2 hover:shadow-md transition">
                 <div class="flex items-center justify-between">
-                  <span class="font-mono text-xs font-bold text-blue-600">${item.no_request}</span>
+                  <span class="font-mono text-xs font-bold text-emerald-600">${item.no_request}</span>
                   <span class="text-[10px] text-slate-400 font-semibold"><i class="fa-solid fa-calendar"></i> ${item.tanggal_pengajuan}</span>
                 </div>
                 <h4 class="font-bold text-slate-800 text-sm">${item.kategori} &bull; <span class="font-normal text-slate-500">${item.jenis}</span></h4>
@@ -1034,11 +1011,11 @@
                 <div class="flex flex-wrap items-center gap-2 pt-2 text-[11px]">
                   <span class="px-2.5 py-0.5 rounded-full font-bold ${prioBadge}">Prio: ${item.prioritas}</span>
                   <span class="px-2.5 py-0.5 rounded-full font-bold ${statusBadge}">${item.status}</span>
-                  <span class="text-slate-500">Jumlah: <strong>${item.qty}</strong></span>
+                  <span class="text-slate-500 font-semibold">Jumlah: <strong>${item.qty}</strong></span>
                 </div>
-                <div class="pt-2 text-xs text-slate-500 border-t border-slate-50">
+                <div class="pt-2 text-xs text-slate-500 border-t border-slate-50 space-y-1">
                   <p><strong>Batas Kebutuhan:</strong> ${item.tanggal_kebutuhan}</p>
-                  <p class="mt-1"><strong>Lampiran:</strong> ${attachmentLink}</p>
+                  <p><strong>Lampiran Referensi:</strong> ${attachmentLink}</p>
                 </div>
                 ${actionButtons}
               </div>
@@ -1047,14 +1024,14 @@
         }
       }
 
-      // 2. RENDER UNTUK USER ADMIN (TABEL MONITORING PENGAJUAN)
+      // 2. RENDER UNTUK ADMIN
       if (currentUser.role === "Admin") {
         renderAdminRequestTable(allRequestsCache);
         
-        // Hitung Metrik Dashboard Admin
+        // Perhitungan Widget Metrik
         const total = allRequestsCache.length;
         const pending = allRequestsCache.filter(r => r.status === "Pending").length;
-        const approved = allRequestsCache.filter(r => r.status === "Approved" || r.status === "On Progress" || r.status === "Selesai").length;
+        const approved = allRequestsCache.filter(r => r.status === "Selesai").length;
         const rejected = allRequestsCache.filter(r => r.status === "Ditolak").length;
         
         document.getElementById("metricTotal").innerText = total;
@@ -1063,21 +1040,18 @@
         document.getElementById("metricRejected").innerText = rejected;
       }
 
-      // 3. RENDER TABEL MONITORING PENGADAAN (DILIHAT KEDUA USER)
+      // 3. RENDER TABEL MONITORING PO PENGADAAN (DILIHAT KEDUA PIHAK)
       const procTableEl = document.getElementById("procurementTableBody");
       procTableEl.innerHTML = "";
       
-      // Ambil yang statusnya minimal sudah "Approved" untuk monitoring PO rincian detail
-      const procurementData = allRequestsCache;
-      
-      if (procurementData.length === 0) {
+      if (allRequestsCache.length === 0) {
         procTableEl.innerHTML = `
           <tr>
-            <td colspan="7" class="p-8 text-center text-slate-400">Tidak ada data rekap pengadaan barang/jasa saat ini.</td>
+            <td colspan="7" class="p-8 text-center text-slate-400 font-semibold">Belum ada pengadaan barang/jasa yang sedang berlangsung.</td>
           </tr>
         `;
       } else {
-        procurementData.forEach(item => {
+        allRequestsCache.forEach(item => {
           let statusBadge = "bg-slate-100 text-slate-600";
           if (item.status === "Pending") statusBadge = "bg-amber-100 text-amber-700";
           else if (item.status === "Approved") statusBadge = "bg-emerald-100 text-emerald-700";
@@ -1086,18 +1060,18 @@
           else if (item.status === "Ditolak") statusBadge = "bg-rose-100 text-rose-700";
 
           procTableEl.innerHTML += `
-            <tr class="hover:bg-slate-50 transition">
+            <tr class="hover:bg-slate-50 transition border-b border-slate-100">
               <td class="p-4 font-mono font-bold text-blue-600">${item.no_request}</td>
               <td class="p-4">
-                <p class="font-semibold text-slate-800">${item.kategori}</p>
-                <p class="text-[10px] text-slate-500">${item.deskripsi}</p>
+                <p class="font-bold text-slate-800">${item.kategori}</p>
+                <p class="text-[10px] text-slate-400 font-semibold">${item.pemohon} (${item.department})</p>
               </td>
               <td class="p-4 font-semibold text-slate-700">${item.vendor || "-"}</td>
               <td class="p-4 text-right font-semibold text-slate-600">Rp ${Number(item.estimasi_budget).toLocaleString('id-ID')}</td>
-              <td class="p-4 text-right font-bold text-slate-800">Rp ${Number(item.total_anggaran).toLocaleString('id-ID')}</td>
-              <td class="p-4 text-slate-600">${item.estimasi_kedatangan || "-"}</td>
+              <td class="p-4 text-right font-extrabold text-slate-800">Rp ${Number(item.total_anggaran).toLocaleString('id-ID')}</td>
+              <td class="p-4 text-slate-600 font-semibold">${item.estimasi_kedatangan || "-"}</td>
               <td class="p-4">
-                <span class="px-2 py-1 rounded-full font-bold ${statusBadge}">${item.status}</span>
+                <span class="px-2 py-0.5 rounded-full font-bold text-[10px] ${statusBadge}">${item.status}</span>
               </td>
             </tr>
           `;
@@ -1105,25 +1079,7 @@
       }
     }
 
-    // --- FUNGSI SEARCH & FILTER ADMIN ---
-    function filterAdminRequests() {
-      const query = document.getElementById("adminSearch").value.toLowerCase();
-      const statusFilter = document.getElementById("adminFilterStatus").value;
-      const divisiFilter = document.getElementById("adminFilterDivisi").value;
-      
-      const filtered = allRequestsCache.filter(item => {
-        const matchesQuery = item.no_request.toLowerCase().includes(query) || 
-                             item.pemohon.toLowerCase().includes(query) || 
-                             item.deskripsi.toLowerCase().includes(query);
-        const matchesStatus = statusFilter === "" || item.status === statusFilter;
-        const matchesDivisi = divisiFilter === "" || item.department === divisiFilter;
-        
-        return matchesQuery && matchesStatus && matchesDivisi;
-      });
-      
-      renderAdminRequestTable(filtered);
-    }
-
+    // --- TABEL PANEL DATA ADMIN ---
     function renderAdminRequestTable(dataList) {
       const tbody = document.getElementById("adminRequestTableBody");
       tbody.innerHTML = "";
@@ -1131,7 +1087,7 @@
       if (dataList.length === 0) {
         tbody.innerHTML = `
           <tr>
-            <td colspan="6" class="p-8 text-center text-slate-400">Tidak ada antrean pengajuan yang cocok dengan filter.</td>
+            <td colspan="6" class="p-8 text-center text-slate-400 font-semibold">Tidak ada berkas pengajuan masuk.</td>
           </tr>
         `;
       } else {
@@ -1148,24 +1104,24 @@
           else if (item.status === "Ditolak") statusBadge = "bg-rose-100 text-rose-700";
 
           tbody.innerHTML += `
-            <tr class="hover:bg-slate-50 transition">
-              <td class="p-4 font-mono font-bold text-blue-600">${item.no_request}</td>
+            <tr class="hover:bg-slate-50 transition border-b border-slate-100">
+              <td class="p-4 font-mono font-bold text-indigo-600">${item.no_request}</td>
               <td class="p-4">
-                <p class="font-bold text-slate-700">${item.pemohon}</p>
-                <p class="text-[10px] text-slate-400">${item.department} &bull; ${item.tanggal_pengajuan}</p>
+                <p class="font-extrabold text-slate-700">${item.pemohon}</p>
+                <p class="text-[10px] text-slate-400 font-bold">${item.department} &bull; ${item.tanggal_pengajuan}</p>
               </td>
               <td class="p-4">
                 <p class="font-semibold text-slate-800">${item.kategori} (${item.qty} Qty)</p>
                 <p class="text-[10px] text-slate-500 line-clamp-2">${item.deskripsi}</p>
               </td>
               <td class="p-4">
-                <span class="px-2 py-0.5 rounded font-bold ${prioBadge}">${item.prioritas}</span>
+                <span class="px-2.5 py-0.5 rounded font-bold ${prioBadge}">${item.prioritas}</span>
               </td>
               <td class="p-4">
-                <span class="px-2 py-0.5 rounded font-bold ${statusBadge}">${item.status}</span>
+                <span class="px-2.5 py-0.5 rounded font-bold ${statusBadge}">${item.status}</span>
               </td>
               <td class="p-4 text-center">
-                <button onclick="openAdminEditModal('${item.no_request}')" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-bold transition flex items-center gap-1 mx-auto">
+                <button onclick="openAdminEditModal('${item.no_request}')" class="px-3.5 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold transition flex items-center gap-1.5 mx-auto text-[11px] shadow-sm uppercase">
                   <i class="fa-solid fa-file-invoice-dollar"></i> Proses PO
                 </button>
               </td>
@@ -1175,7 +1131,7 @@
       }
     }
 
-    // --- EDIT PENGAJUAN (REQUESTER) ---
+    // --- FITUR EDIT PENGAJUAN (REQUESTER) ---
     function editRequest(noReq) {
       const item = allRequestsCache.find(r => r.no_request === noReq);
       if (!item) return;
@@ -1189,21 +1145,22 @@
       document.getElementById("reqPrioritas").value = item.prioritas;
       document.getElementById("reqTglButuh").value = item.tanggal_kebutuhan;
       
-      // Gulir ke atas
       window.scrollTo({ top: 0, behavior: 'smooth' });
       
-      // Tampilkan tombol batal & ubah teks submit
-      document.getElementById("submitFormBtn").innerText = "Simpan Perubahan";
+      const submitBtn = document.getElementById("submitFormBtn");
+      submitBtn.innerText = "Simpan Perubahan";
+      submitBtn.className = "flex-1 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl text-xs transition duration-150 shadow-md uppercase tracking-wider";
+      
       document.getElementById("cancelFormBtn").classList.remove("hidden");
     }
 
     // --- HAPUS PENGAJUAN (REQUESTER) ---
     async function deleteRequest(noReq) {
-      if (!confirm("Apakah Anda yakin ingin menghapus permanen pengajuan " + noReq + "?")) return;
+      if (!confirm("Apakah Anda yakin ingin menghapus permanen berkas pengajuan " + noReq + "?")) return;
       
-      showLoader("Menghapus pengajuan...");
+      showLoader("Menghapus berkas pengajuan...");
       try {
-        const rawResponse = await fetch(spreadsheetApiUrl, {
+        const rawResponse = await fetch(SCRIPT_API_URL, {
           method: "POST",
           headers: { "Content-Type": "text/plain" },
           body: JSON.stringify({
@@ -1217,10 +1174,10 @@
         hideLoader();
         
         if (res.success) {
-          showToast("Dihapus", res.message, "success");
+          showToast("Berhasil", res.message, "success");
           fetchData();
         } else {
-          showToast("Gagal Menghapus", res.message, "error");
+          showToast("Gagal", res.message, "error");
         }
       } catch (err) {
         hideLoader();
@@ -1228,7 +1185,7 @@
       }
     }
 
-    // --- MODAL DETIL ADMIN (PROSES PO / STATUS) ---
+    // --- MODAL UPDATE DATA OLEH ADMIN/PURCHASING ---
     function openAdminEditModal(noReq) {
       const item = allRequestsCache.find(r => r.no_request === noReq);
       if (!item) return;
@@ -1266,11 +1223,11 @@
         }
       };
       
-      showLoader("Memperbarui status pengadaan...");
+      showLoader("Menyimpan perubahan alur PO...");
       closeAdminModal();
       
       try {
-        const rawResponse = await fetch(spreadsheetApiUrl, {
+        const rawResponse = await fetch(SCRIPT_API_URL, {
           method: "POST",
           headers: { "Content-Type": "text/plain" },
           body: JSON.stringify(payload)
@@ -1280,26 +1237,26 @@
         hideLoader();
         
         if (res.success) {
-          showToast("Berhasil Terupdate", res.message, "success");
+          showToast("Data Diperbarui", res.message, "success");
           fetchData();
         } else {
-          showToast("Gagal", res.message, "error");
+          showToast("Gagal Memperbarui", res.message, "error");
         }
       } catch (err) {
         hideLoader();
-        showToast("Error", "Gagal memperbarui status pengadaan ke spreadsheet.", "error");
+        showToast("Error", "Gagal menyimpan rincian PO ke Google Sheets.", "error");
       }
     }
 
-    // --- AMBIL AUDIT LOG ---
+    // --- TARIK DATA AUDIT LOG REAL-TIME ---
     async function fetchAuditLogs() {
-      if (!spreadsheetApiUrl) return;
+      if (!SCRIPT_API_URL) return;
       
       const tbody = document.getElementById("auditLogTableBody");
-      tbody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-slate-400">Menarik data log audit...</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-slate-400 font-semibold">Menarik berkas log aktivitas...</td></tr>`;
       
       try {
-        const rawResponse = await fetch(spreadsheetApiUrl, {
+        const rawResponse = await fetch(SCRIPT_API_URL, {
           method: "POST",
           headers: { "Content-Type": "text/plain" },
           body: JSON.stringify({ action: "getAuditLogs" })
@@ -1309,24 +1266,43 @@
         if (res.success) {
           tbody.innerHTML = "";
           if (res.data.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-slate-400">Belum ada catatan aktivitas.</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-slate-400 font-semibold">Belum ada rekaman aktivitas.</td></tr>`;
           } else {
             res.data.forEach(log => {
               tbody.innerHTML += `
-                <tr class="hover:bg-slate-50 transition">
+                <tr class="hover:bg-slate-50 transition border-b border-slate-100">
                   <td class="p-4 font-mono font-bold text-slate-500">${log.no_auditlog}</td>
-                  <td class="p-4 text-slate-600">${log.waktu}</td>
-                  <td class="p-4 font-semibold text-slate-700">${log.pengguna}</td>
-                  <td class="p-4"><span class="px-2 py-0.5 rounded bg-slate-100 text-slate-700 font-bold text-[10px] uppercase">${log.aksi}</span></td>
-                  <td class="p-4 text-slate-600">${log.keterangan}</td>
+                  <td class="p-4 text-slate-600 font-semibold">${log.waktu}</td>
+                  <td class="p-4 font-extrabold text-slate-700">${log.pengguna}</td>
+                  <td class="p-4"><span class="px-2 py-0.5 rounded bg-slate-100 text-slate-700 font-extrabold text-[10px] uppercase tracking-wide border border-slate-200">${log.aksi}</span></td>
+                  <td class="p-4 text-slate-600 font-semibold">${log.keterangan}</td>
                 </tr>
               `;
             });
           }
         }
       } catch (err) {
-        tbody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-rose-500">Gagal menyinkronkan data audit log dari spreadsheet.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-rose-500 font-semibold">Gagal memuat log audit dari spreadsheet.</td></tr>`;
       }
+    }
+
+    // --- PANEL FILTER PENCARIAN ADMIN ---
+    function filterAdminRequests() {
+      const query = document.getElementById("adminSearch").value.toLowerCase();
+      const statusFilter = document.getElementById("adminFilterStatus").value;
+      const divisiFilter = document.getElementById("adminFilterDivisi").value;
+      
+      const filtered = allRequestsCache.filter(item => {
+        const matchesQuery = item.no_request.toLowerCase().includes(query) || 
+                             item.pemohon.toLowerCase().includes(query) || 
+                             item.deskripsi.toLowerCase().includes(query);
+        const matchesStatus = statusFilter === "" || item.status === statusFilter;
+        const matchesDivisi = divisiFilter === "" || item.department === divisiFilter;
+        
+        return matchesQuery && matchesStatus && matchesDivisi;
+      });
+      
+      renderAdminRequestTable(filtered);
     }
   </script>
 </body>
