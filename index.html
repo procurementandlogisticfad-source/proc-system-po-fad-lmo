@@ -325,11 +325,9 @@
               </div>
 
               <div>
-                <label class="block text-[10px] font-bold text-slate-500 mb-1 uppercase tracking-wider">Dokumen / Lampiran Foto</label>
-                <input type="file" id="reqFile" onchange="convertFileToBase64()" class="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 cursor-pointer">
-                <input type="hidden" id="reqFileBase64" value="">
-                <input type="hidden" id="reqFileName" value="">
-                <p class="text-[10px] text-slate-400 mt-1">Gunakan format gambar JPG/PNG atau Dokumen PDF.</p>
+                <label>Link Lampiran (Google Drive / Lainnya)</label>
+                <input type="text" id="fileLink" placeholder="Tempel link file di sini...">
+                <small>Pastikan link sudah diset "Anyone with the link can view".</small>
               </div>
 
               <div class="flex gap-2 pt-2">
@@ -705,30 +703,7 @@
 
     function closeDriveErrorModal() {
       document.getElementById("driveErrorModal").classList.add("hidden");
-    }
-
-    // --- FORM RENDERER UNTUK LAMPIRAN AMAN (MENCEGAH ERROR 404 JIKA DRIVE TIDAK TEROTORISASI) ---
-    function buildFileButton(url, title, type = "emerald") {
-      if (!url || url === "-") {
-        return "<span class='text-slate-400 font-medium'>Tidak Ada</span>";
-      }
-      
-      // Deteksi jika link adalah string error dari Google Drive
-      if (url.startsWith("Error Upload") || url.indexOf("Exception") !== -1) {
-        return `<span onclick="triggerDriveDiagnostics()" class="px-2.5 py-1 bg-rose-50 text-rose-600 border border-rose-200 rounded-lg hover:bg-rose-100 font-bold transition flex items-center gap-1 justify-center max-w-[140px] cursor-pointer" title="${url}">
-                  <i class="fa-solid fa-triangle-exclamation"></i> Izin Drive ⚠️
-                </span>`;
-      }
-      
-      const btnColor = type === "emerald" 
-        ? "bg-emerald-50 text-emerald-600 border-emerald-200 hover:bg-emerald-100" 
-        : "bg-blue-50 text-blue-600 border-blue-200 hover:bg-blue-100";
-
-      return `<a href="${url}" target="_blank" class="px-2.5 py-1 ${btnColor} border rounded-lg font-bold transition flex items-center gap-1 justify-center max-w-[120px]">
-                <i class="fa-solid fa-paperclip"></i> ${title}
-              </a>`;
-    }
-
+    
     // --- LOADING SYSTEM ---
     function showLoader(text) {
       document.getElementById("loaderText").innerText = text;
@@ -981,7 +956,7 @@
           qty: document.getElementById("reqQty").value,
           prioritas: document.getElementById("reqPrioritas").value,
           tanggal_kebutuhan: document.getElementById("reqTglButuh").value,
-          lampiran: document.getElementById("reqFileBase64").value || "-",
+          lampiran: document.getElementById("fileLink").value || "-",
           file_name: document.getElementById("reqFileName").value || "" // Mengirim nama file asli untuk diolah DriveApp di Apps Script
         }
       };
