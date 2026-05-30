@@ -460,6 +460,7 @@
                   <th class="p-4 text-right">Estimasi Budget</th>
                   <th class="p-4 text-right">Total Anggaran</th>
                   <th class="p-4">Estimasi Kedatangan</th>
+                  <th class="p-4">Bukti Selesai</th>
                   <th class="p-4">Status Progress</th>
                 </tr>
               </thead>
@@ -525,7 +526,7 @@
         
         <div>
           <label class="block text-[10px] font-bold text-slate-500 mb-1.5 uppercase tracking-wide">Status Alur Pengadaan</label>
-          <select id="modalStatus" class="w-full px-3 py-2.5 border border-slate-200 rounded-xl text-sm bg-white font-medium">
+          <select id="modalStatus" onchange="handleModalStatusChange()" class="w-full px-3 py-2.5 border border-slate-200 rounded-xl text-sm bg-white font-medium">
             <option value="Pending">Pending (Menunggu Persetujuan)</option>
             <option value="Approved">Approved (Disetujui / Mulai Pengadaan)</option>
             <option value="On Progress">On Progress (Proses Pemesanan PO)</option>
@@ -557,8 +558,17 @@
           </div>
           <div>
             <label class="block text-[10px] font-bold text-slate-500 mb-1.5 uppercase tracking-wide">Estimasi Tanggal Datang</label>
-            <input type="text" id="modalEstimasiKedatangan" placeholder="e.g. 15 Juni 2026" required class="w-full px-4 py-2 border border-slate-200 rounded-xl text-sm bg-white">
+            <input type="date" id="modalEstimasiKedatangan" required class="w-full px-4 py-2 border border-slate-200 rounded-xl text-sm bg-white">
           </div>
+        </div>
+
+        <!-- Dynamic Evidence Upload Container (Hanya tampil jika status Selesai) -->
+        <div id="evidenceUploadContainer" class="hidden border-t border-slate-100 pt-3 space-y-2">
+          <label class="block text-[10px] font-bold text-indigo-600 uppercase tracking-wide"><i class="fa-solid fa-cloud-arrow-up mr-1"></i> Upload Bukti Serah Terima / DO / BA / Foto</label>
+          <input type="file" id="modalEvidenceFile" onchange="convertEvidenceFileToBase64()" class="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 cursor-pointer">
+          <input type="hidden" id="modalEvidenceBase64" value="">
+          <input type="hidden" id="modalEvidenceFileName" value="">
+          <p class="text-[10px] text-slate-400">Unggah berkas bukti penyelesaian sebagai arsip pengadaan resmi.</p>
         </div>
 
         <button type="submit" class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-xs transition duration-150 shadow-md uppercase tracking-wider">
@@ -578,7 +588,7 @@
     // =========================================================================
     // TEMPELKAN URL DEPLOY APPS SCRIPT ANDA DI SINI
     // =========================================================================
-    const SCRIPT_API_URL = "https://script.google.com/macros/s/AKfycbwUnEFFK94M0h6NNYuayqEtkUxgvqh_bvuvK1MA9cWu345nFe0yJ4ae57UnNQebebI4/exec";
+    const SCRIPT_API_URL = "https://script.google.com/macros/s/AKfycbuUnEFFK-6fQOsh4xZ_L4z47R3f_jN78_oA6N0vYwS_MhC0u3e_U-o-Sg4yG24P8l3Y/exec";
     // =========================================================================
 
     // State Global
@@ -608,7 +618,7 @@
       document.getElementById("reqTanggal").value = today;
     });
 
-    // --- SIKLUS PEMBERITAHUAN TOAST (BUKAN ALERT BROWSER) ---
+    // --- SIKLUS PEMBERITAHUAN TOAST (DIPERBAIKI SECARA ANDAL) ---
     function showToast(title, message, type = "info") {
       const toast = document.getElementById("toast");
       const icon = document.getElementById("toastIcon");
@@ -639,15 +649,24 @@
         icon.innerHTML = '<i class="fa-solid fa-circle-info"></i>';
       }
       
+      toast.classList.remove("hidden");
+      // Force reflow
+      toast.offsetHeight;
       toast.classList.remove("translate-y-[-150%]");
       toast.classList.add("translate-y-0");
       
+      // Auto-hide setelah 5 detik
       setTimeout(hideToast, 5000);
     }
 
+    // Fungsi hideToast diperbaiki agar tidak menumpuk atau menghalangi interaksi halaman
     function hideToast() {
       const toast = document.getElementById("toast");
+      toast.classList.remove("translate-y-0");
       toast.classList.add("translate-y-[-150%]");
+      setTimeout(() => {
+        toast.classList.add("hidden");
+      }, 300);
     }
 
     // --- LOADING SYSTEM ---
@@ -854,7 +873,7 @@
       }
     }
 
-    // --- PROSES FILE ATTACHMENT KE BASE64 ---
+    // --- PROSES FILE ATTACHMENT KE BASE64 (Dukungan penuh upload ke Google Drive via Apps Script) ---
     function convertFileToBase64() {
       const fileInput = document.getElementById("reqFile");
       const file = fileInput.files[0];
@@ -864,6 +883,20 @@
       reader.onload = function(e) {
         document.getElementById("reqFileBase64").value = e.target.result;
         document.getElementById("reqFileName").value = file.name;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    // Convert Admin Evidence file to Base64
+    function convertEvidenceFileToBase64() {
+      const fileInput = document.getElementById("modalEvidenceFile");
+      const file = fileInput.files[0];
+      if (!file) return;
+      
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        document.getElementById("modalEvidenceBase64").value = e.target.result;
+        document.getElementById("modalEvidenceFileName").value = file.name;
       };
       reader.readAsDataURL(file);
     }
@@ -888,7 +921,8 @@
           qty: document.getElementById("reqQty").value,
           prioritas: document.getElementById("reqPrioritas").value,
           tanggal_kebutuhan: document.getElementById("reqTglButuh").value,
-          lampiran: document.getElementById("reqFileBase64").value || "-"
+          lampiran: document.getElementById("reqFileBase64").value || "-",
+          file_name: document.getElementById("reqFileName").value || "" // Mengirim nama file asli untuk diolah DriveApp di Apps Script
         }
       };
       
@@ -980,6 +1014,9 @@
             const hasAttachment = item.lampiran && item.lampiran !== "-";
             const attachmentLink = hasAttachment ? `<a href="${item.lampiran}" target="_blank" class="text-emerald-600 hover:underline font-bold flex items-center gap-1"><i class="fa-solid fa-paperclip"></i> Lihat Lampiran</a>` : "<span class='text-slate-400 font-medium'>Tanpa Berkas</span>";
             
+            const hasEvidence = item.evidence && item.evidence !== "-";
+            const evidenceDisplay = hasEvidence ? `<p class="text-xs text-blue-600 font-bold mt-1 bg-blue-50 p-2 rounded-lg flex items-center gap-1.5"><i class="fa-solid fa-file-signature"></i> Bukti Serah Terima: <a href="${item.evidence}" target="_blank" class="underline hover:text-blue-800">Lihat Berkas Dokumen/Foto</a></p>` : "";
+
             let prioBadge = "bg-slate-100 text-slate-700";
             if (item.prioritas === "Urgent") prioBadge = "bg-rose-100 text-rose-700";
             else if (item.prioritas === "High") prioBadge = "bg-amber-100 text-amber-700";
@@ -1016,6 +1053,7 @@
                 <div class="pt-2 text-xs text-slate-500 border-t border-slate-50 space-y-1">
                   <p><strong>Batas Kebutuhan:</strong> ${item.tanggal_kebutuhan}</p>
                   <p><strong>Lampiran Referensi:</strong> ${attachmentLink}</p>
+                  ${evidenceDisplay}
                 </div>
                 ${actionButtons}
               </div>
@@ -1047,7 +1085,7 @@
       if (allRequestsCache.length === 0) {
         procTableEl.innerHTML = `
           <tr>
-            <td colspan="7" class="p-8 text-center text-slate-400 font-semibold">Belum ada pengadaan barang/jasa yang sedang berlangsung.</td>
+            <td colspan="8" class="p-8 text-center text-slate-400 font-semibold">Belum ada pengadaan barang/jasa yang sedang berlangsung.</td>
           </tr>
         `;
       } else {
@@ -1059,6 +1097,24 @@
           else if (item.status === "Selesai") statusBadge = "bg-blue-100 text-blue-700";
           else if (item.status === "Ditolak") statusBadge = "bg-rose-100 text-rose-700";
 
+          const hasEvidence = item.evidence && item.evidence !== "-";
+          const evidenceCell = hasEvidence ? `<a href="${item.evidence}" target="_blank" class="text-blue-600 hover:underline font-bold flex items-center justify-center gap-1 text-xs"><i class="fa-solid fa-file-contract"></i> DO / BA</a>` : "<span class='text-slate-400'>Belum Ada</span>";
+
+          // Format Date untuk Estimasi Kedatangan saat di-render
+          let formattedKedatangan = "-";
+          if (item.estimasi_kedatangan && item.estimasi_kedatangan !== "-") {
+            try {
+              const dateObj = new Date(item.estimasi_kedatangan);
+              if (!isNaN(dateObj)) {
+                formattedKedatangan = dateObj.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+              } else {
+                formattedKedatangan = item.estimasi_kedatangan;
+              }
+            } catch (e) {
+              formattedKedatangan = item.estimasi_kedatangan;
+            }
+          }
+
           procTableEl.innerHTML += `
             <tr class="hover:bg-slate-50 transition border-b border-slate-100">
               <td class="p-4 font-mono font-bold text-blue-600">${item.no_request}</td>
@@ -1069,7 +1125,8 @@
               <td class="p-4 font-semibold text-slate-700">${item.vendor || "-"}</td>
               <td class="p-4 text-right font-semibold text-slate-600">Rp ${Number(item.estimasi_budget).toLocaleString('id-ID')}</td>
               <td class="p-4 text-right font-extrabold text-slate-800">Rp ${Number(item.total_anggaran).toLocaleString('id-ID')}</td>
-              <td class="p-4 text-slate-600 font-semibold">${item.estimasi_kedatangan || "-"}</td>
+              <td class="p-4 text-slate-600 font-semibold">${formattedKedatangan}</td>
+              <td class="p-4 text-center">${evidenceCell}</td>
               <td class="p-4">
                 <span class="px-2 py-0.5 rounded-full font-bold text-[10px] ${statusBadge}">${item.status}</span>
               </td>
@@ -1185,6 +1242,17 @@
       }
     }
 
+    // Penanganan perubahan dinamis form ketika admin memilih status "Selesai"
+    function handleModalStatusChange() {
+      const statusValue = document.getElementById("modalStatus").value;
+      const evidenceContainer = document.getElementById("evidenceUploadContainer");
+      if (statusValue === "Selesai") {
+        evidenceContainer.classList.remove("hidden");
+      } else {
+        evidenceContainer.classList.add("hidden");
+      }
+    }
+
     // --- MODAL UPDATE DATA OLEH ADMIN/PURCHASING ---
     function openAdminEditModal(noReq) {
       const item = allRequestsCache.find(r => r.no_request === noReq);
@@ -1197,7 +1265,21 @@
       document.getElementById("modalEstimasiBudget").value = item.estimasi_budget || 0;
       document.getElementById("modalTotalAnggaran").value = item.total_anggaran || 0;
       document.getElementById("modalVendor").value = item.vendor || "-";
-      document.getElementById("modalEstimasiKedatangan").value = item.estimasi_kedatangan || "-";
+      
+      // Mengatur format date default pada modal
+      if (item.estimasi_kedatangan && item.estimasi_kedatangan !== "-") {
+        document.getElementById("modalEstimasiKedatangan").value = item.estimasi_kedatangan;
+      } else {
+        document.getElementById("modalEstimasiKedatangan").value = "";
+      }
+      
+      // Reset evidence upload state
+      document.getElementById("modalEvidenceBase64").value = "";
+      document.getElementById("modalEvidenceFileName").value = "";
+      document.getElementById("modalEvidenceFile").value = "";
+      
+      // Trigger penanganan perubahan kontainer upload evidence
+      handleModalStatusChange();
       
       document.getElementById("adminEditModal").classList.remove("hidden");
     }
@@ -1219,7 +1301,9 @@
           estimasi_budget: document.getElementById("modalEstimasiBudget").value,
           total_anggaran: document.getElementById("modalTotalAnggaran").value,
           vendor: document.getElementById("modalVendor").value.trim(),
-          estimasi_kedatangan: document.getElementById("modalEstimasiKedatangan").value.trim()
+          estimasi_kedatangan: document.getElementById("modalEstimasiKedatangan").value,
+          evidence: document.getElementById("modalEvidenceBase64").value || "-", // Menyertakan bukti base64
+          evidence_name: document.getElementById("modalEvidenceFileName").value || "" // Menyertakan nama berkas bukti
         }
       };
       
